@@ -1,6 +1,9 @@
 import { IAuthRepository } from "../repository/interface/IAuthRepository";
-import { loginType } from "../types/authTypes";
+import { loginType, serviceLoginResponse } from "../types/authTypes";
+import { IUser } from "../types/modelTypes";
+import { generateAccessToken, generateRefreshToken } from "../utils/jwtToken";
 import { IAuthService } from "./interface/IAuthService";
+import bcrypt from 'bcryptjs'
 
 export class AuthService  implements IAuthService {
     private __authRepository:IAuthRepository
@@ -9,19 +12,20 @@ export class AuthService  implements IAuthService {
   }
 
   // login user with phone number and password
-  async login(data: loginType): Promise<string> {
+  async login(data: loginType): Promise<serviceLoginResponse | null> {
     if (!data.phoneNumber || !data.password) {
-      throw new Error("Phone number and password are required");
+      return {status: false, message: "Phone number and password are required"};
     }
-
-    // Call the repository method to handle login logic
-    // const token = await this.__authRepository.login(data);
-    const token = ""
-    
-    if (!token) {
-      throw new Error("Invalid phone number or password");
+    let checkUser = await this.__authRepository.getUserByPhoneNumber(data.phoneNumber);
+    if(!checkUser){
+      return {status: false, message: "User not found"};
     }
-
-    return token;
+    const isPasswordValid = await bcrypt.compare(data.password, checkUser.password);
+    if (!isPasswordValid) {
+      return {status: false, message: "Invalid password"};
+    }
+    const accessToken  =  generateAccessToken({id: checkUser._id , role: checkUser.role});
+    const refreshToken  =  generateRefreshToken({id: checkUser._id , role: checkUser.role});
+    return { status:true ,user:checkUser, accessToken, refreshToken};
   }
 }

@@ -19,6 +19,7 @@ app.use(cors({
 }));
 
 app.use(express.json());
+// app.use(express.cookieparser());
 app.use('/uploads', express.static('uploads'));
 
 app.use('/api/auth', authRouter);

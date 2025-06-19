@@ -1,5 +1,5 @@
-import { loginType } from "../../types/authTypes";
+import { loginType, serviceLoginResponse } from "../../types/authTypes";
 
 export interface IAuthService {
-  login(data: loginType): Promise<string>;  
+  login(data: loginType): Promise<serviceLoginResponse | null>;  
 }

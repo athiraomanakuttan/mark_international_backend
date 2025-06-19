@@ -16,8 +16,19 @@ export class AuthController{
         if(!phoneNumber || !password) {
             res.status(STATUS_CODE.BAD_REQUEST).json({status: false, message: "Phone number and password are required", data: null});
         try {
-            const token = await this.__authService.login({phoneNumber, password} as loginType);
-            res.status(200).json({ token });
+            const data = await this.__authService.login({phoneNumber, password} as loginType);
+            if(data?.status){
+                //set refresh token in cookie
+                res.cookie('refreshToken', data.refreshToken, {
+                    httpOnly: true,
+                    secure: false,
+                    sameSite: 'none',  
+                    maxAge: 7 * 24 * 60 * 60 * 1000
+                });
+                res.status(STATUS_CODE.OK).json({status: true, message: MESSAGE_CONST.LOGIN_SUCCESS, data: {user: data?.user, accessToken: data?.accessToken}});
+                return
+            }
+            res.status(STATUS_CODE.UNAUTHORIZED).json({status: false, message: data?.message, data: null});
         } catch (error) {
             res.status(401).json({status: false, message: MESSAGE_CONST.INTERNAL_SERVER_ERROR, data: null});
         }

@@ -9,5 +9,7 @@ export enum MESSAGE_CONST {
     NOT_FOUND = "Resource not found",
     INTERNAL_SERVER_ERROR = "Internal server error",
     SERVICE_UNAVAILABLE = "Service unavailable",
-    GATEWAY_TIMEOUT = "Gateway timeout"
+    GATEWAY_TIMEOUT = "Gateway timeout",
+    LOGIN_SUCCESS = "Login successful",
+
 }
