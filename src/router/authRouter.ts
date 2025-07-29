@@ -8,6 +8,6 @@ const authRepository = new AuthRepository()
 const authService = new AuthService(authRepository)
 const authController = new AuthController(authService)
 
-// router.post('/login',)
+router.post('/login', (req, res) => authController.userLogin(req, res));
 
-export default router;
+export default router; 

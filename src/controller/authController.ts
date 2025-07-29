@@ -12,9 +12,12 @@ export class AuthController{
 
     // staff and admin login try with phone number and passowrd
       async userLogin(req:Request, res:Response): Promise<void> {
+        console.log("working")
         const { phoneNumber, password } = req.body;
+        console.log("phoneNumber", phoneNumber, "password", password);
         if(!phoneNumber || !password) {
             res.status(STATUS_CODE.BAD_REQUEST).json({status: false, message: "Phone number and password are required", data: null});
+            return }
         try {
             const data = await this.__authService.login({phoneNumber, password} as loginType);
             if(data?.status){
@@ -30,9 +33,10 @@ export class AuthController{
             }
             res.status(STATUS_CODE.UNAUTHORIZED).json({status: false, message: data?.message, data: null});
         } catch (error) {
-            res.status(401).json({status: false, message: MESSAGE_CONST.INTERNAL_SERVER_ERROR, data: null});
+            console.log("Error in userLogin:", error);
+            res.status(STATUS_CODE.INTERNAL_SERVER_ERROR).json({status: false, message: MESSAGE_CONST.INTERNAL_SERVER_ERROR, data: null});
         }
-    }
+    
 
 }
 }

@@ -12,11 +12,12 @@ export class AuthService  implements IAuthService {
   }
 
   // login user with phone number and password
-  async login(data: loginType): Promise<serviceLoginResponse | null> {
+  async login(data: loginType): Promise<serviceLoginResponse | null> { 
     if (!data.phoneNumber || !data.password) {
       return {status: false, message: "Phone number and password are required"};
     }
     let checkUser = await this.__authRepository.getUserByPhoneNumber(data.phoneNumber);
+    console.log("checkUser",checkUser)
     if(!checkUser){
       return {status: false, message: "User not found"};
     }
