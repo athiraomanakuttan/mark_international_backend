@@ -12,9 +12,7 @@ export class AuthController{
 
     // staff and admin login try with phone number and passowrd
       async userLogin(req:Request, res:Response): Promise<void> {
-        console.log("working")
         const { phoneNumber, password } = req.body;
-        console.log("phoneNumber", phoneNumber, "password", password);
         if(!phoneNumber || !password) {
             res.status(STATUS_CODE.BAD_REQUEST).json({status: false, message: "Phone number and password are required", data: null});
             return }

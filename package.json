@@ -7,7 +7,7 @@
   "scripts": {
     "dev": "ts-node-dev src/server.ts",
     "build": "tsc",
-    "start": "nodemon dist/server.js"
+    "start": "npm run build && nodemon dist/server.js"
   },
   "author": "Athira omanakuttan",
   "license": "MIT",

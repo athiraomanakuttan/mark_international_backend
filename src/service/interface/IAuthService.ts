@@ -1,5 +1,6 @@
-import { loginType, serviceLoginResponse } from "../../types/authTypes";
+import { IUserDto } from "../../dto/dtoTypes/users/usersDto";
+import { loginType } from "../../types/authTypes";
 
 export interface IAuthService {
-  login(data: loginType): Promise<serviceLoginResponse | null>;  
+  login(data: loginType): Promise<IUserDto | null>;  
 }
