@@ -6,16 +6,15 @@ const userSchema = new Schema<IUser & Document>({
   phoneNumber: { type: String, required: true, unique: true },
   password: { type: String, required: true },
   designation: { type: String, required: true },
-  email: { type: String, unique: true },
-  accessibleUsers: { type: String },
-  staffImage: { type: Schema.Types.Mixed },
-  openingBalance: { type: String },
-  accessOfficialWhatsapp: { type: Boolean, default: false },
-  accessPhoneCallLog: { type: Boolean, default: false },
-  role: { type: String, enum: ["admin", "user"], required: true },
+  email: { type: String, required: false },
+  accessibleUsers: { type: [Number], default: [] },
+  profilePic: { type: Schema.Types.Mixed },
+  openingBalance: { type: Number, default: 0 },
+  role: { type: String, enum: ["admin", "staff"], required: true, default: "staff" },
+  isActive: { type: Boolean, default:1, enum: [0, 1, -1] },
 }, {
   timestamps: true,
 });
-const UserModel = model<IUser & Document>("User", userSchema);
-export default UserModel;
+const User = model<IUser & Document>("User", userSchema);
+export default User;
 
