@@ -3,7 +3,7 @@ import { IUser } from "../types/modelTypes";
 
 const userSchema = new Schema<IUser & Document>({
   name: { type: String, required: true },
-  phoneNumber: { type: String, required: true, unique: true },
+  phoneNumber: { type: String, required: true},
   password: { type: String, required: true },
   designation: { type: String, required: true },
   email: { type: String, required: false },

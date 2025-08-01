@@ -12,17 +12,21 @@ class StaffController {
   async createStaff(req: Request, res: Response): Promise<void> {
     try {
       const staffData: StaffBasicType = req.body;
-      console.log("staffData  ====>", staffData);
       if (!staffData || !staffData.name) {
         res.status(STATUS_CODE.BAD_REQUEST).json({ error: "Invalid staff data" });
         return;
       }
       const createdStaff = await this.__staffService.createStaff(staffData);
-      res.status(STATUS_CODE.CREATED).json(createdStaff);
-    } catch (error) {
-      console.error("Error creating staff:", error);
-      res.status(STATUS_CODE.INTERNAL_SERVER_ERROR).json({ error: "Failed to create staff" });
+      console.log("Created staff:", createdStaff);
+      res.status(STATUS_CODE.CREATED).json({status: true, message:"Staff created successfully", data: createdStaff});
+    } catch (err: any) {
+      console.log("error in controller",err)
+      if (err.code === 11000 && err.keyPattern?.phoneNumber) {
+      res.status(STATUS_CODE.INTERNAL_SERVER_ERROR).json({ status: false, message: "Phone number already in use" });
+      return;}
+      res.status(STATUS_CODE.INTERNAL_SERVER_ERROR).json({ status: false, message: "Failed to create staff" });
     }
+    res.status(STATUS_CODE.INTERNAL_SERVER_ERROR).json({ status: false, message: "Failed to create staff" });
   }
 }
 

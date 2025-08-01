@@ -10,4 +10,4 @@ const staffController = new StaffController(staffService)
 
 router.post('/',upload.single('profilePic'), (req, res) => staffController.createStaff(req, res))
 
-export default router
+export default router 

@@ -14,9 +14,12 @@ export class StaffService implements IStaffService {
             const hashedPassword = await bcrypt.hash(staff.password, 10);
             const response = await this.__staffRepository.createStaff({ ...staff, password: hashedPassword });
             return response;
-        } catch (error) {
-            console.error("Error creating staff:", error);
+        } catch (err:any) {
+            if (err.message === "Phone number already in use") {
+                throw { code: 11000, keyPattern: { phoneNumber: 1 } };
+            }
             throw new Error("Failed to create staff");
-        }
+        
     }
+}
 }
