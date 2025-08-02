@@ -26,7 +26,18 @@ class StaffController {
       return;}
       res.status(STATUS_CODE.INTERNAL_SERVER_ERROR).json({ status: false, message: "Failed to create staff" });
     }
-    res.status(STATUS_CODE.INTERNAL_SERVER_ERROR).json({ status: false, message: "Failed to create staff" });
+  }
+
+  async getActiveStaff(req: Request, res: Response): Promise<void> {
+    try {
+      const {page = 1,limit = 10, status} = req.query;
+      const staffList = await this.__staffService.getActiveStaff(Number(page), Number(limit), "staff",Number(status));
+      res.status(STATUS_CODE.OK).json({ status: true, data: staffList });
+    } catch (error) {
+      console.log("error in controller", error);
+      res.status(STATUS_CODE.INTERNAL_SERVER_ERROR).json({ status: false, message: "Failed to retrieve staff" });
+    }
+
   }
 }
 

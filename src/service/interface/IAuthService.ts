@@ -1,4 +1,4 @@
-import { IUserDto } from "../../dto/dtoTypes/users/usersDto";
+import { IUserDto, UserData } from "../../dto/dtoTypes/users/usersDto";
 import { loginType } from "../../types/authTypes";
 
 export interface IAuthService {

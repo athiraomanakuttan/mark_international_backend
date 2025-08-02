@@ -5,9 +5,9 @@
   "main": "index.js",
   "type": "commonjs",
   "scripts": {
-    "dev": "ts-node-dev src/server.ts",
+    "dev": "ts-node-dev --respawn --transpile-only src/server.ts",
     "build": "tsc",
-    "start": "npm run build && nodemon dist/server.js"
+    "start": "npm run build && node dist/server.js"
   },
   "author": "Athira omanakuttan",
   "license": "MIT",
@@ -38,6 +38,7 @@
     "@types/multer": "^2.0.0",
     "@types/node": "^24.0.3",
     "ts-node": "^10.9.2",
+    "ts-node-dev": "^2.0.0",
     "typescript": "^5.8.3"
   }
 }

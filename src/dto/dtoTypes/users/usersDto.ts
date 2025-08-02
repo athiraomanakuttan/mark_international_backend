@@ -5,6 +5,7 @@ export interface UserData{
     designation: string
     isAdmin: boolean
     role: string
+    status : number
 }
 
 export interface IUserDto{
@@ -13,4 +14,9 @@ export interface IUserDto{
         user ?: UserData,
         accessToken ?: string;
         refreshToken ?: string;
+}
+
+export interface StaffResponse {
+    users : UserData[],
+    totalRecords: number
 }

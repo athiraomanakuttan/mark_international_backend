@@ -1,3 +1,4 @@
+import { StaffResponse } from "../../dto/dtoTypes/users/usersDto";
 import { IStaffRepository } from "../../repository/interface/admin/IStaffRepository";
 import { StaffBasicType } from "../../types/staffType";
 import { IStaffService } from "../interface/admin/IStaffService";
@@ -22,4 +23,12 @@ export class StaffService implements IStaffService {
         
     }
 }
+    async getActiveStaff(page: number, limit: number, role: string, status: number): Promise<StaffResponse> {
+        try {
+            const response = await this.__staffRepository.getActiveStaff(page, limit, role, status);
+            return response;
+        } catch (err) {
+            throw new Error("Failed to retrieve active staff");
+        }
+    }
 }

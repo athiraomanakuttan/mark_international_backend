@@ -11,3 +11,8 @@ export interface serviceLoginResponse {
     accessToken ?: string;
     refreshToken ?: string;
 }
+
+export interface UserAuthType{
+    id: string
+    role: string
+}

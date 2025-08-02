@@ -8,6 +8,7 @@ export const mapUserToDto = (user: IUser): UserData => {
     phoneNumber: user.phoneNumber,
     designation: user.designation,
     isAdmin: user.role === 'admin',
+    status:user.isActive || -1,
     role: user.role,
   };
 };
