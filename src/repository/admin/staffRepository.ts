@@ -49,6 +49,20 @@ class StaffRepository implements IStaffRepository {
       throw new Error("Failed to update staff");
     }
   }
+
+  async updateStaffStatus(staffId: string, status: number): Promise<UserData | null> {
+    try {
+      const updatedStaff = await User.findByIdAndUpdate(staffId, { isActive: status }, { new: true });
+      console.log("updatedStaff", updatedStaff)
+      if (!updatedStaff) {
+        return null;
+      }
+      return mapUsersToDto([updatedStaff])[0];
+    } catch (err) {
+      console.log("error in updateStaffStatus", err);
+      throw new Error("Failed to update staff status");
+    }
+  }
 }
 
 export default StaffRepository;

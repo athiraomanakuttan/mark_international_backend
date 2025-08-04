@@ -11,7 +11,7 @@ const userSchema = new Schema<IUser & Document>({
   profilePic: { type: Schema.Types.Mixed },
   openingBalance: { type: Number, default: 0 },
   role: { type: String, enum: ["admin", "staff"], required: true, default: "staff" },
-  isActive: { type: Boolean, default:1, enum: [0, 1, -1] },
+  isActive: { type: Number, default:1, enum: [0, 1, -1] },
 }, {
   timestamps: true,
 });

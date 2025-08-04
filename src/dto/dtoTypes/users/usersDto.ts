@@ -7,6 +7,7 @@ export interface UserData{
     isAdmin: boolean
     role: string
     status : number
+    createdAt?: Date
 }
 
 export interface IUserDto{

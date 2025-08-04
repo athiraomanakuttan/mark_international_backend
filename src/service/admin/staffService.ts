@@ -1,4 +1,4 @@
-import { StaffResponse } from "../../dto/dtoTypes/users/usersDto";
+import { StaffResponse, UserData } from "../../dto/dtoTypes/users/usersDto";
 import { IStaffRepository } from "../../repository/interface/admin/IStaffRepository";
 import { StaffBasicType, StaffUpdateType } from "../../types/staffType";
 import { IStaffService } from "../interface/admin/IStaffService";
@@ -42,6 +42,15 @@ export class StaffService implements IStaffService {
             return response;
         } catch (err) {
             throw new Error("Failed to update staff");
+        }
+    }
+
+    async updateStaffStatus(staffId: string, status: number): Promise<UserData | null> {
+        try {
+            const response = await this.__staffRepository.updateStaffStatus(staffId, status);
+            return response;
+        } catch (err) {
+            throw new Error("Failed to update staff status");
         }
     }
 }

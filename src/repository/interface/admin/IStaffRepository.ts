@@ -5,4 +5,5 @@ export interface IStaffRepository {
   createStaff(staffData: StaffBasicType): Promise<any>;
   getActiveStaff(page: number, limit: number, role: string, status: number): Promise<StaffResponse>;
   updateStaff(staffId: string, staffData: StaffUpdateType): Promise<UserData | null>;
+  updateStaffStatus(staffId: string, status: number): Promise<UserData | null>;
 }

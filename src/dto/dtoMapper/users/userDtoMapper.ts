@@ -10,6 +10,7 @@ export const mapUserToDto = (user: IUser): UserData => {
     designation: user.designation,
     isAdmin: user.role === 'admin',
     status:user.isActive || -1,
+    createdAt: user.createdAt,
     role: user.role,
   };
 };

@@ -56,6 +56,27 @@ class StaffController {
       res.status(STATUS_CODE.INTERNAL_SERVER_ERROR).json({ status: false, message: "Failed to update staff" });
     }
   }
+
+  async updateStaffStatus(req: Request, res: Response): Promise<void> {
+    try {
+      const staffId = req.params.id;
+      const status = Number(req.params.status);
+      console.log("staffId", staffId, "status", status);
+      if (!staffId) {
+        res.status(STATUS_CODE.BAD_REQUEST).json({ error: "Invalid staff ID" });
+        return;
+      }
+      if(isNaN(status) || status>1 || status<-1){
+        res.status(STATUS_CODE.BAD_REQUEST).json({ error: "Invalid status value" });
+        return;
+      }
+      const updatedStaff = await this.__staffService.updateStaffStatus(staffId, status);
+      res.status(STATUS_CODE.OK).json({ status: true, message: "Staff status updated successfully", data: updatedStaff });
+    } catch (error) {
+      console.log("error in controller", error);
+      res.status(STATUS_CODE.INTERNAL_SERVER_ERROR).json({ status: false, message: "Failed to update staff status" });
+    }
+  } 
 }
 
 export default StaffController;
