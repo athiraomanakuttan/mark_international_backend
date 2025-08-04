@@ -1,9 +1,8 @@
-import { StaffBasicType } from "../../types/staffType";
+import { StaffBasicType, StaffUpdateType } from "../../types/staffType";
 import { IStaffRepository } from "../interface/admin/IStaffRepository";
 import User from '../../model/userModel'
 import {mapUsersToDto} from '../../dto/dtoMapper/users/userDtoMapper'
 import { StaffResponse, UserData } from "../../dto/dtoTypes/users/usersDto";
-import { createDeflate } from "zlib";
 
 class StaffRepository implements IStaffRepository {
   async createStaff(staffData: StaffBasicType): Promise<any> {
@@ -35,6 +34,19 @@ class StaffRepository implements IStaffRepository {
       return { users: DtoData, totalRecords } as StaffResponse;
     } catch (err) {
       throw new Error("Failed to retrieve active staff");
+    } 
+  }
+
+  async updateStaff(staffId: string, staffData: StaffUpdateType): Promise<UserData | null> {
+    try {
+      const updatedStaff = await User.findByIdAndUpdate(staffId, staffData, { new: true });
+      console.log("updatedStaff", updatedStaff)
+      if (!updatedStaff) {
+        return null;
+      }
+      return mapUsersToDto([updatedStaff])[0];
+    } catch (err) {
+      throw new Error("Failed to update staff");
     }
   }
 }

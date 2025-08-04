@@ -2,6 +2,7 @@ export interface UserData{
     id: string
     name:  string
     phoneNumber: string
+    email?:string,
     designation: string
     isAdmin: boolean
     role: string

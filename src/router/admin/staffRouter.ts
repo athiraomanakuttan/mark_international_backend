@@ -15,5 +15,6 @@ router.use(adminAuthentication as unknown as (req: Request, res: Response, next:
 
 router.post('/', upload.single('profilePic'), (req:Request, res:Response) => staffController.createStaff(req, res))
 router.get('/', (req:Request, res:Response) => staffController.getActiveStaff(req, res))
+router.patch('/:id', upload.single('profilePic'), (req:Request, res:Response) => staffController.updateStaff(req, res))
 
 export default router 

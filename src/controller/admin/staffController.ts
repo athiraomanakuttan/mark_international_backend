@@ -1,7 +1,7 @@
 import { IStaffService } from "../../service/interface/admin/IStaffService";
 import { Request, Response } from "express";
 import { STATUS_CODE } from "../../constance/statusCode";
-import { StaffBasicType } from "../../types/staffType";
+import { StaffBasicType, StaffUpdateType } from "../../types/staffType";
 class StaffController {
   private __staffService: IStaffService;
 
@@ -38,6 +38,23 @@ class StaffController {
       res.status(STATUS_CODE.INTERNAL_SERVER_ERROR).json({ status: false, message: "Failed to retrieve staff" });
     }
 
+  }
+
+  async updateStaff(req: Request, res: Response): Promise<void> {
+    try {
+      const staffId = req.params.id;
+      const staffData: StaffUpdateType = req.body;
+      console.log("staffData", staffData)
+      if (!staffId || !staffData) {
+        res.status(STATUS_CODE.BAD_REQUEST).json({ error: "Invalid staff ID or data" });
+        return;
+      }
+      const updatedStaff = await this.__staffService.updateStaff(staffId, staffData);
+      res.status(STATUS_CODE.OK).json({ status: true, message: "Staff updated successfully", data: updatedStaff });
+    } catch (error) {
+      console.log("error in controller", error);
+      res.status(STATUS_CODE.INTERNAL_SERVER_ERROR).json({ status: false, message: "Failed to update staff" });
+    }
   }
 }
 

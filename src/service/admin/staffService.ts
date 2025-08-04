@@ -1,6 +1,6 @@
 import { StaffResponse } from "../../dto/dtoTypes/users/usersDto";
 import { IStaffRepository } from "../../repository/interface/admin/IStaffRepository";
-import { StaffBasicType } from "../../types/staffType";
+import { StaffBasicType, StaffUpdateType } from "../../types/staffType";
 import { IStaffService } from "../interface/admin/IStaffService";
 import bcrypt from 'bcryptjs'
 
@@ -29,6 +29,19 @@ export class StaffService implements IStaffService {
             return response;
         } catch (err) {
             throw new Error("Failed to retrieve active staff");
+        }
+    }
+
+    async updateStaff(staffId: string, staffData: StaffUpdateType): Promise<any> {
+        try {
+            if (staffData?.password) {
+                const hashedPassword = await bcrypt.hash(staffData.password, 10);
+                staffData.password = hashedPassword;
+            }
+            const response = await this.__staffRepository.updateStaff(staffId, staffData);
+            return response;
+        } catch (err) {
+            throw new Error("Failed to update staff");
         }
     }
 }

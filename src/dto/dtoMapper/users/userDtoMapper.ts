@@ -5,6 +5,7 @@ export const mapUserToDto = (user: IUser): UserData => {
   return {
     id: user?._id!.toString(),
     name: user.name,
+    email: user.email,
     phoneNumber: user.phoneNumber,
     designation: user.designation,
     isAdmin: user.role === 'admin',
