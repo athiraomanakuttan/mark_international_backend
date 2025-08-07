@@ -5,7 +5,10 @@ import cors from 'cors';
 import morgan from 'morgan';
 import 'dotenv/config';
 import authRouter from './router/authRouter';
+
+// routers import
 import adminStaffRouter from './router/admin/staffRouter';
+import leadRouter from './router/admin/leadRouter';
 
 const app = express();
 
@@ -37,5 +40,6 @@ app.use('/uploads', express.static('uploads'));
 // ✅ API routes
 app.use('/api/auth', authRouter);
 app.use('/api/admin/staff', adminStaffRouter);
+app.use('/api/admin/leads', leadRouter);
 
 export default app;

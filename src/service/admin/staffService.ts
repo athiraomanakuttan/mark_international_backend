@@ -23,7 +23,7 @@ export class StaffService implements IStaffService {
         
     }
 }
-    async getActiveStaff(page: number, limit: number, role: string, status: number): Promise<StaffResponse> {
+    async getActiveStaff(page: number, limit: number, role: string, status: number = 1): Promise<StaffResponse> {
         try {
             const response = await this.__staffRepository.getActiveStaff(page, limit, role, status);
             return response;
