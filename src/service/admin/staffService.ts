@@ -25,6 +25,7 @@ export class StaffService implements IStaffService {
 }
     async getActiveStaff(page: number, limit: number, role: string, status: number = 1): Promise<StaffResponse> {
         try {
+            
             const response = await this.__staffRepository.getActiveStaff(page, limit, role, status);
             return response;
         } catch (err) {
@@ -52,5 +53,9 @@ export class StaffService implements IStaffService {
         } catch (err) {
             throw new Error("Failed to update staff status");
         }
+    }
+
+    async getAllActive(): Promise<UserData[]> {
+        return await this.__staffRepository.getAllActive()
     }
 }

@@ -15,10 +15,7 @@ const leadSourceSchema = new Schema<LeadBasicType & Document>({
   category: { type: String },
   status: { type: Number, enum: [ -1,0,1, 2, 3,4,5], default: 1 }, // -1: perement delete, 0:delete, [{name:"New", value:1}, {name:"Confirmed", value:2},  {name:"Follow Up", value:3},{name:"Rejected", value:4}, {name:"Lost", value:5}, {name:"Converted", value:6}]
   referredBy: { type: String, },
-  createdAt: { type: String },
-  updatedAt: { type: String },
-  createdBy: { type: String }
-});
+},{timestamps: true});
 
 const LeadModel = model<LeadBasicType & Document>('Lead', leadSourceSchema);
 

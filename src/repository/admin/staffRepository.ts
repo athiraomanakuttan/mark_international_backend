@@ -33,6 +33,7 @@ class StaffRepository implements IStaffRepository {
       console.log("DtoData", DtoData)
       return { users: DtoData, totalRecords } as StaffResponse;
     } catch (err) {
+      console.log("error in repo", err)
       throw new Error("Failed to retrieve active staff");
     } 
   }
@@ -62,6 +63,18 @@ class StaffRepository implements IStaffRepository {
       console.log("error in updateStaffStatus", err);
       throw new Error("Failed to update staff status");
     }
+  }
+  async getAllActive(): Promise<UserData[]> {
+    try {
+      const staffList = await User.find({  isActive: true }).sort({createdAt: -1})
+        
+        console.log("staffList",staffList)
+        const DtoData = mapUsersToDto(staffList);
+      return DtoData
+    } catch (err) {
+      console.log("error in repo", err)
+      throw new Error("Failed to retrieve active staff");
+    } 
   }
 }
 

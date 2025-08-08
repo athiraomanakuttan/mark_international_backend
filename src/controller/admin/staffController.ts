@@ -2,6 +2,7 @@ import { IStaffService } from "../../service/interface/admin/IStaffService";
 import { Request, Response } from "express";
 import { STATUS_CODE } from "../../constance/statusCode";
 import { StaffBasicType, StaffUpdateType } from "../../types/staffType";
+import { MESSAGE_CONST } from "../../constant/MessageConst";
 class StaffController {
   private __staffService: IStaffService;
 
@@ -30,8 +31,8 @@ class StaffController {
 
   async getActiveStaff(req: Request, res: Response): Promise<void> {
     try {
-      const {page = 1,limit = 10, status} = req.query;
-      const staffList = await this.__staffService.getActiveStaff(Number(page), Number(limit), "staff",Number(status));
+      const {page = 1,limit = 10, status=1, role = "staff"} = req.query;
+      const staffList = await this.__staffService.getActiveStaff(Number(page), Number(limit), String(role),Number(status));
       res.status(STATUS_CODE.OK).json({ status: true, data: staffList });
     } catch (error) {
       console.log("error in controller", error);
@@ -77,6 +78,17 @@ class StaffController {
       res.status(STATUS_CODE.INTERNAL_SERVER_ERROR).json({ status: false, message: "Failed to update staff status" });
     }
   } 
+
+  async getAllActive(req:Request, res:Response):Promise<void>{
+    try {
+      const response = await this.__staffService.getAllActive()
+      if(response){
+        res.status(STATUS_CODE.OK).json({status: true, message:"data fetched sucess", data: response})
+      }
+    } catch (error) {
+      res.status(STATUS_CODE.INTERNAL_SERVER_ERROR).json({status: false, meessage:MESSAGE_CONST.INTERNAL_SERVER_ERROR, data:[]})
+    }
+  }
 }
 
 export default StaffController;
