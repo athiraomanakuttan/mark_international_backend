@@ -3,7 +3,7 @@ import { MESSAGE_CONST } from "../constant/MessageConst";
 import { ILeadService } from "../service/interface/ILeadService";
 import { Request,Response } from "express";
 import { CustomRequestType } from "../types/requestType";
-import { LeadBasicType } from "../types/leadTypes";
+import { LeadBasicType, LeadFilterType } from "../types/leadTypes";
 export class LeadController{
     private __leadService:ILeadService
     constructor(leadService:ILeadService){
@@ -37,8 +37,22 @@ export class LeadController{
 
     async getLead(req:Request, res:Response):Promise<void>{
         try {
-            const {status=7, page =1, limit=10} = req.query
-            const response = await this.__leadService.getLeadByStatus(Number(status),Number(page),Number(limit))
+           const {
+  status = "7",
+  page = "1",
+  limit = "10",
+  filter = "",
+  search = ""
+} = req.query as {
+  status?: string;
+  page?: string;
+  limit?: string;
+  filter?: string;
+  search?: string;
+};
+    const filterdata = JSON.parse(filter)
+    console.log("filterdata",filterdata)
+            const response = await this.__leadService.getLeadByStatus(Number(status),Number(page),Number(limit), filterdata as LeadFilterType,search)
             if(response)
                 res.status(STATUS_CODE.OK).json({status:true, message:"data fetched successfully", data:response})
 

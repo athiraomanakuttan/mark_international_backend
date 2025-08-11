@@ -41,3 +41,14 @@ export  interface LeadType    {
     createdByData ?: IUser[]
     
 }
+
+export interface LeadFilterType {
+  fromDate?: Date;
+  toDate?: Date;
+  leadCategory ?: (string | number)[];
+  leadStatus ?: (string | number)[];
+  priority ?: (string | number)[];
+  leadSource ?: (string | number)[];
+  staff ?: (string | number)[];
+  createBy ?: (string | number)[];
+}

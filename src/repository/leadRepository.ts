@@ -1,6 +1,7 @@
 import { ILeadRepository } from "./interface/ILeadRepository";
 import Lead from "../model/leadModel";
-import { LeadBasicType, LeadresponseType, LeadType } from "../types/leadTypes";
+import { LeadBasicType, LeadFilterType, LeadresponseType, LeadType } from "../types/leadTypes";
+import mongoose from "mongoose";
 export class LeadRepository implements ILeadRepository {
   async createLead(leadData: LeadBasicType): Promise<any> {
     try {
@@ -11,51 +12,100 @@ export class LeadRepository implements ILeadRepository {
       throw new Error("Failed to create staff");
     }
   }
-  async getLeadByStatus(
-    status: Number,
-    page: number,
-    limit: number
-  ): Promise<LeadresponseType> {
-    try {
-      const skip = (page - 1) * limit;
-      let statusArr = [];
-      if (status === 7) statusArr = [1, 2, 3, 4, 5, 6];
-      else statusArr = [status];
+  // repository
+async getLeadByStatus(
+  status: number,
+  page: number,
+  limit: number,
+  filterData: LeadFilterType,
+  search: string
+): Promise<LeadresponseType> {
+  try {
+    const skip = (page - 1) * limit;
+    let statusArr: number[] = [];
 
-      const leadList = await Lead.aggregate([
-        {
-          $match: { status: { $in: statusArr } },
-        },
-        {
-          $lookup: {
-            from: "users",
-            foreignField: "_id",
-            localField: "assignedAgent",
-            as: "assignedAgentData",
-          },
-        },
-        {
-          $lookup: {
-            from: "users",
-            foreignField: "_id",
-            localField: "createdBy",
-            as: "createdByData",
-          },
-        },
-        {
-          $sort: { updatedAt: -1 },
-        },
-        { $skip: skip },
-        { $limit: limit },
-      ]);
-      const totalRecords = await Lead.find({
-        status: { $in: statusArr },
-      }).countDocuments();
-      return { lead: leadList as LeadType[] , totalRecords };
-    } catch (error) {
-      throw error;
+    if (status === 7) statusArr = [1, 2, 3, 4, 5, 6];
+    else statusArr = [status];
+
+    // Base match condition
+    const matchConditions: any = { status: { $in: statusArr } };
+
+    // Apply date range filter
+    if (filterData.fromDate || filterData.toDate) {
+      matchConditions.createdAt = {};
+      if (filterData.fromDate) {
+        matchConditions.createdAt.$gte = new Date(filterData.fromDate);
+      }
+      if (filterData.toDate) {
+        matchConditions.createdAt.$lte = new Date(filterData.toDate);
+      }
     }
+
+    // Apply array-based filters
+    if (filterData.leadCategory?.length) {
+      matchConditions.leadCategory = { $in: filterData.leadCategory };
+    }
+    if (filterData.leadStatus?.length) {
+      matchConditions.leadStatus = { $in: filterData.leadStatus };
+    }
+    if (filterData.priority?.length) {
+      matchConditions.priority = { $in: filterData.priority };
+    }
+    if (filterData.leadSource?.length) {
+      matchConditions.leadSource = { $in: filterData.leadSource };
+    }
+    if (filterData.staff?.length) {
+    matchConditions.assignedAgent = {
+    $in: filterData.staff.map(id => new mongoose.Types.ObjectId(id))
+  };
   }
+
+    if (filterData.createBy?.length) {
+  matchConditions.createdBy = {
+    $in: filterData.createBy.map(id => new mongoose.Types.ObjectId(id))
+  };
+}
+
+
+    // Apply search (on name or phoneNumber)
+    if (search?.trim()) {
+      matchConditions.$or = [
+        { name: { $regex: search, $options: "i" } },
+        { phoneNumber: { $regex: search, $options: "i" } }
+      ];
+    }
+    console.log("matchConditions", matchConditions)
+    const leadList = await Lead.aggregate([
+      { $match: matchConditions },
+      {
+        $lookup: {
+          from: "users",
+          foreignField: "_id",
+          localField: "assignedAgent",
+          as: "assignedAgentData",
+        },
+      },
+      {
+        $lookup: {
+          from: "users",
+          foreignField: "_id",
+          localField: "createdBy",
+          as: "createdByData",
+        },
+      },
+      { $sort: { updatedAt: -1 } },
+      { $skip: skip },
+      { $limit: limit },
+    ]);
+
+    const totalRecords = await Lead.countDocuments(matchConditions);
+    console.log("leadList", leadList)
+    return { lead: leadList as LeadType[], totalRecords };
+  } catch (error) {
+    throw error;
+  }
+}
+
 
   // Placeholder methods for future implementation
   // async getLeadById(leadId: string): Promise<any> {
