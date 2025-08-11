@@ -1,6 +1,6 @@
 import { ILeadRepository } from "./interface/ILeadRepository";
 import Lead from "../model/leadModel";
-import { LeadBasicType, LeadFilterType, LeadresponseType, LeadType } from "../types/leadTypes";
+import { BulkLeadTransformType, BulkLeadType, LeadBasicType, LeadFilterType, LeadresponseType, LeadType } from "../types/leadTypes";
 import mongoose from "mongoose";
 export class LeadRepository implements ILeadRepository {
   async createLead(leadData: LeadBasicType): Promise<any> {
@@ -101,6 +101,15 @@ async getLeadByStatus(
     return { lead: leadList as LeadType[], totalRecords };
   } catch (error) {
     throw error;
+  }
+}
+
+async createBulkLead(leadData: BulkLeadTransformType[]): Promise<any> {
+  try {
+    const response =  await Lead.insertMany(leadData)
+    return response
+  } catch (error) {
+    throw error
   }
 }
 

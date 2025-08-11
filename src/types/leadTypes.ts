@@ -52,3 +52,24 @@ export interface LeadFilterType {
   staff ?: (string | number)[];
   createBy ?: (string | number)[];
 }
+
+export interface BulkLeadType {
+  name: string
+  phoneNumber: string
+  countryCode?: string
+  address ?: string
+  leadCategory ?: string
+  staff ?: string
+  leadSource ?: string
+  priority ?: string,
+  createdBy ?: mongoose.Types.ObjectId
+}
+export interface BulkLeadTransformType {
+     name: string,
+      phoneNumber:string,
+      assignedAgent: mongoose.Types.ObjectId,
+      priority: number, // default to Normal
+      address:string,
+      leadSource: number, 
+      createdBy:mongoose.Types.ObjectId,
+}

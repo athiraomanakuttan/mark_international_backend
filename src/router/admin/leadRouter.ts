@@ -18,5 +18,6 @@ router.use(adminAuthentication as unknown as (req: Request, res: Response, next:
 
 router.post('/',(req,res)=>leadController.createLead(req,res))
 router.get('/', (req:Request, res:Response)=> leadController.getLead(req,res))
+router.post('/upload', (req:Request, res:Response)=>leadController.createBulkLead(req,res))
 
 export default router

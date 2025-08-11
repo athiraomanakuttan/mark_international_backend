@@ -1,6 +1,7 @@
+import mongoose from "mongoose"
 import { leadsMapper } from "../dto/dtoMapper/leadDtoMapper"
 import { ILeadRepository } from "../repository/interface/ILeadRepository"
-import { LeadBasicType, LeadFilterType } from "../types/leadTypes"
+import { BulkLeadTransformType, BulkLeadType, LeadBasicType, LeadFilterType } from "../types/leadTypes"
 import { ILeadService } from "./interface/ILeadService"
 
 
@@ -25,4 +26,25 @@ export class LeadService implements ILeadService{
             throw error
         }
     }
+
+
+async createBulkLead(userId: string, leadData: BulkLeadType[]): Promise<any> {
+  try {
+    const transformedData   = leadData.map((data) => ({
+      name: data.name,
+      phoneNumber: data.phoneNumber,
+      assignedAgent: data.staff ? new mongoose.Types.ObjectId(data.staff) : undefined,
+      priority: data.priority ? Number(data.priority) : 2, // default to Normal
+      address: data.address || "",
+      leadSource: 2, 
+      createdBy: new mongoose.Types.ObjectId(userId),
+    
+    }));
+    console.log("transformedData",transformedData)
+    return await this.__leadRepository.createBulkLead(transformedData as BulkLeadTransformType[]);
+  } catch (error) {
+    throw error;
+  }
+}
+
 }

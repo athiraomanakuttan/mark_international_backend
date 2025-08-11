@@ -3,7 +3,7 @@ import { MESSAGE_CONST } from "../constant/MessageConst";
 import { ILeadService } from "../service/interface/ILeadService";
 import { Request,Response } from "express";
 import { CustomRequestType } from "../types/requestType";
-import { LeadBasicType, LeadFilterType } from "../types/leadTypes";
+import { BulkLeadType, LeadBasicType, LeadFilterType } from "../types/leadTypes";
 export class LeadController{
     private __leadService:ILeadService
     constructor(leadService:ILeadService){
@@ -60,4 +60,22 @@ export class LeadController{
             res.status(STATUS_CODE.INTERNAL_SERVER_ERROR).json({status: false, message:MESSAGE_CONST.INTERNAL_SERVER_ERROR})
         }
     }
+
+ async createBulkLead(req:CustomRequestType, res:Response):Promise<void>{
+    try {
+        const userId = req.user?.id
+        if(!userId){
+        res.status(STATUS_CODE.UNAUTHORIZED).json({status: false, message:MESSAGE_CONST.UNAUTHORIZED})
+            return
+        }
+        const leadData = req.body
+        console.log(leadData,"userId", userId) 
+        const response = await this.__leadService.createBulkLead(userId, leadData as BulkLeadType[])
+        if(response)
+            res.status(STATUS_CODE.OK).json({status: true, message:"file upload successfull"})
+    } catch (error) {
+        console.log("lead upload error in controller",error)
+        res.status(STATUS_CODE.INTERNAL_SERVER_ERROR).json({status: false, message:MESSAGE_CONST.INTERNAL_SERVER_ERROR})
+    }
+}
 }
