@@ -14,6 +14,7 @@ export const leadDtoMapper = (lead:LeadType): LeadDto=>{
         referredBy: lead.referredBy,
         leadSource:lead.leadSource,
         status: lead.status,
+        remarks:lead.remarks,
         assignedAgent_id: lead?.assignedAgentData?.[0]?._id,
         assignedAgent_name: lead?.assignedAgentData?.[0]?.name
     }

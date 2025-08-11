@@ -78,4 +78,18 @@ export class LeadController{
         res.status(STATUS_CODE.INTERNAL_SERVER_ERROR).json({status: false, message:MESSAGE_CONST.INTERNAL_SERVER_ERROR})
     }
 }
+
+async updateLead(req:Request, res:Response):Promise<void>{
+        try{
+            const leadId = req.params.id
+            const leadData = req.body
+            console.log("leadData", leadData)
+            const response = await this.__leadService.updateLead(leadId, leadData)
+            if(response)
+                res.status(STATUS_CODE.OK).json({status: true, message:MESSAGE_CONST.UPDATION_SUCCESS})
+
+        }catch(err){
+            res.status(STATUS_CODE.INTERNAL_SERVER_ERROR).json({status:false, message:MESSAGE_CONST.INTERNAL_SERVER_ERROR})
+        }
+}
 }

@@ -34,6 +34,7 @@ export  interface LeadType    {
     leadSource : number,
     createdBy : mongoose.Types.ObjectId,
     status: number,
+    remarks ?: string,
     createdAt:Date,
     updatedAt:Date,
     referredBy?:string,
@@ -72,4 +73,21 @@ export interface BulkLeadTransformType {
       address:string,
       leadSource: number, 
       createdBy:mongoose.Types.ObjectId,
+}
+
+export  interface UpdatedLeadType    {
+    name?:string,
+    phoneNumber ?: string,
+    leadType ?:number,
+    assignedAgent ?: mongoose.Types.ObjectId
+    priority ?: number,
+    leadSource ?: number,
+    createdBy ?: mongoose.Types.ObjectId,
+    status ?: number,
+    createdAt ?:Date,
+    updatedAt ?:Date,
+    referredBy?:string,
+    assignedAgentData ?: IUser[],
+    createdByData ?: IUser[]
+    
 }

@@ -1,6 +1,6 @@
 import { ILeadRepository } from "./interface/ILeadRepository";
 import Lead from "../model/leadModel";
-import { BulkLeadTransformType, BulkLeadType, LeadBasicType, LeadFilterType, LeadresponseType, LeadType } from "../types/leadTypes";
+import { BulkLeadTransformType, BulkLeadType, LeadBasicType, LeadFilterType, LeadresponseType, LeadType, UpdatedLeadType } from "../types/leadTypes";
 import mongoose from "mongoose";
 export class LeadRepository implements ILeadRepository {
   async createLead(leadData: LeadBasicType): Promise<any> {
@@ -72,7 +72,6 @@ async getLeadByStatus(
         { phoneNumber: { $regex: search, $options: "i" } }
       ];
     }
-    console.log("matchConditions", matchConditions)
     const leadList = await Lead.aggregate([
       { $match: matchConditions },
       {
@@ -97,7 +96,6 @@ async getLeadByStatus(
     ]);
 
     const totalRecords = await Lead.countDocuments(matchConditions);
-    console.log("leadList", leadList)
     return { lead: leadList as LeadType[], totalRecords };
   } catch (error) {
     throw error;
@@ -119,9 +117,14 @@ async createBulkLead(leadData: BulkLeadTransformType[]): Promise<any> {
   //     return { success: true, data: { id: leadId } };
   // }
 
-  // async updateLead(leadId: string, leadData: any): Promise<any> {
-  //     return { success: true, data: { id: leadId, ...leadData } };
-  // }
+  async updateLead(leadId: string, leadData: UpdatedLeadType): Promise<any> {
+      try {
+        const response = await Lead.updateOne({_id:leadId},leadData)
+        return response
+      } catch (error) {
+        throw error
+      }
+  }
 
   // async deleteLead(leadId: string): Promise<any> {
   //     return { success: true, message: `Lead ${leadId} deleted` };

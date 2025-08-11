@@ -1,7 +1,7 @@
 import mongoose from "mongoose"
 import { leadsMapper } from "../dto/dtoMapper/leadDtoMapper"
 import { ILeadRepository } from "../repository/interface/ILeadRepository"
-import { BulkLeadTransformType, BulkLeadType, LeadBasicType, LeadFilterType } from "../types/leadTypes"
+import { BulkLeadTransformType, BulkLeadType, LeadBasicType, LeadFilterType, UpdatedLeadType } from "../types/leadTypes"
 import { ILeadService } from "./interface/ILeadService"
 
 
@@ -27,8 +27,7 @@ export class LeadService implements ILeadService{
         }
     }
 
-
-async createBulkLead(userId: string, leadData: BulkLeadType[]): Promise<any> {
+    async createBulkLead(userId: string, leadData: BulkLeadType[]): Promise<any> {
   try {
     const transformedData   = leadData.map((data) => ({
       name: data.name,
@@ -45,6 +44,14 @@ async createBulkLead(userId: string, leadData: BulkLeadType[]): Promise<any> {
   } catch (error) {
     throw error;
   }
-}
+    }
+
+    async updateLead(leadId: string, leadData: UpdatedLeadType): Promise<any> {
+      try {
+        return await this.__leadRepository.updateLead(leadId, leadData)
+      } catch (error) {
+        throw error
+      }
+    }
 
 }
