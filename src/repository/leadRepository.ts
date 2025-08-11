@@ -66,8 +66,6 @@ async getLeadByStatus(
   };
 }
 
-
-    // Apply search (on name or phoneNumber)
     if (search?.trim()) {
       matchConditions.$or = [
         { name: { $regex: search, $options: "i" } },
