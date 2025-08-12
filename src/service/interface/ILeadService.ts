@@ -5,4 +5,5 @@ export interface ILeadService{
     getLeadByStatus(status:number,page:number,limit:number,filterData:LeadFilterType,search:string):Promise<any>
     createBulkLead(userId:string, leadData:BulkLeadType[]):Promise<any>
     updateLead(leadId:string, leadData:UpdatedLeadType):Promise<any>
+    transferLead(staffId: string, leadList:string[]):Promise<any>
 }

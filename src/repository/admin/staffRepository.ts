@@ -27,7 +27,6 @@ class StaffRepository implements IStaffRepository {
       const staffList = await User.find({ role, isActive: status }).sort({createdAt: -1})
         .skip(skip)
         .limit(limit)
-        console.log("staffList",staffList)
         const DtoData = mapUsersToDto(staffList);
         const totalRecords = await User.find({role,isActive:status}).countDocuments();
       console.log("DtoData", DtoData)
@@ -68,7 +67,6 @@ class StaffRepository implements IStaffRepository {
     try {
       const staffList = await User.find({  isActive: true }).sort({createdAt: -1})
         
-        console.log("staffList",staffList)
         const DtoData = mapUsersToDto(staffList);
       return DtoData
     } catch (err) {

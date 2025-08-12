@@ -110,7 +110,16 @@ async createBulkLead(leadData: BulkLeadTransformType[]): Promise<any> {
     throw error
   }
 }
-
+async transferLead(staffId: string, leadData: string[]): Promise<any> {
+  try {
+    const updatedData = await Lead.updateMany({_id:{$in: leadData}},{$set:{assignedAgent: staffId}})
+    console.log("updatedData",updatedData)
+    return updatedData
+  } catch (error) {
+    console.log("error======>", error)
+    throw error
+  }
+}
 
   // Placeholder methods for future implementation
   // async getLeadById(leadId: string): Promise<any> {

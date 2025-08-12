@@ -6,6 +6,7 @@ import { StaffService } from '../../service/admin/staffService'
 import StaffController from '../../controller/admin/staffController'
 import { upload } from '../../middlewares/multer'
 import authenticationMiddleware from '../../middlewares/authenticationMiddleware'
+import { LeadController } from "../../controller/leadController";
 const staffRepository = new StaffRepository()
 const staffService = new StaffService(staffRepository)
 const staffController = new StaffController(staffService)
@@ -18,4 +19,5 @@ router.get('/', (req:Request, res:Response) => staffController.getActiveStaff(re
 router.patch('/:id', upload.single('profilePic'), (req:Request, res:Response) => staffController.updateStaff(req, res))
 router.patch('/:id/:status', (req:Request, res:Response) => staffController.updateStaffStatus(req, res))
 router.get('/get-all-active', (req:Request,res:Response)=> staffController.getAllActive(req,res))
+
 export default router 

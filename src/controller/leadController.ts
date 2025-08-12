@@ -83,7 +83,6 @@ async updateLead(req:Request, res:Response):Promise<void>{
         try{
             const leadId = req.params.id
             const leadData = req.body
-            console.log("leadData", leadData)
             const response = await this.__leadService.updateLead(leadId, leadData)
             if(response)
                 res.status(STATUS_CODE.OK).json({status: true, message:MESSAGE_CONST.UPDATION_SUCCESS})
@@ -91,5 +90,27 @@ async updateLead(req:Request, res:Response):Promise<void>{
         }catch(err){
             res.status(STATUS_CODE.INTERNAL_SERVER_ERROR).json({status:false, message:MESSAGE_CONST.INTERNAL_SERVER_ERROR})
         }
+}
+
+async transferLead(req:Request, res:Response):Promise<void>{
+    try {
+        const {staffId, leadList} = req.body
+        if(!staffId){
+        res.status(STATUS_CODE.BAD_REQUEST).json({status: false, message: "staff id is empty"})
+            return
+        }
+        else if(leadList.lead<=0)
+        {
+            res.status(STATUS_CODE.BAD_REQUEST).json({status: false, message: "lead lsit  is empty"})
+            return
+        }
+        const response = await this.__leadService.transferLead(staffId, leadList)
+        if(response){
+        res.status(STATUS_CODE.OK).json({status: true, message: MESSAGE_CONST.UPDATION_SUCCESS})
+        }
+    } catch (error) {
+        console.log("===>=>",error)
+        res.status(STATUS_CODE.INTERNAL_SERVER_ERROR).json({status: false, message: MESSAGE_CONST.INTERNAL_SERVER_ERROR})
+    }
 }
 }

@@ -54,4 +54,12 @@ export class LeadService implements ILeadService{
       }
     }
 
+    async transferLead(staffId: string, leadList: string[]): Promise<any> {
+      try {
+        return await this.__leadRepository.transferLead(staffId, leadList)
+      } catch (error) {
+        throw error
+      }
+    }
+
 }
