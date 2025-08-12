@@ -8,5 +8,6 @@ export interface ILeadRepository {
     // getLeadById(leadId: string): Promise<any>;
     updateLead(leadId: string, leadData: UpdatedLeadType): Promise<any>;
     transferLead(staffId:string, leadData:string[]):Promise<any>
+    deleteMultipleLeads(status:number, leadData:string[]):Promise<any>
     // deleteLead(leadId: string): Promise<any>;
 }

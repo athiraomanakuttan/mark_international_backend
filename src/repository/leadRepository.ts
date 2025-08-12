@@ -46,7 +46,7 @@ async getLeadByStatus(
       matchConditions.leadCategory = { $in: filterData.leadCategory };
     }
     if (filterData.leadStatus?.length) {
-      matchConditions.leadStatus = { $in: filterData.leadStatus };
+      matchConditions.status = { $in: filterData.leadStatus };
     }
     if (filterData.priority?.length) {
       matchConditions.priority = { $in: filterData.priority };
@@ -72,6 +72,7 @@ async getLeadByStatus(
         { phoneNumber: { $regex: search, $options: "i" } }
       ];
     }
+    console.log("matchConditions", matchConditions)
     const leadList = await Lead.aggregate([
       { $match: matchConditions },
       {
@@ -116,7 +117,15 @@ async transferLead(staffId: string, leadData: string[]): Promise<any> {
     console.log("updatedData",updatedData)
     return updatedData
   } catch (error) {
-    console.log("error======>", error)
+    throw error
+  }
+}
+
+async deleteMultipleLeads(status: number, leadData: string[]): Promise<any> {
+  try {
+    const response = await Lead.updateMany({_id:{$in:leadData}},{$set:{status} })
+    return response
+  } catch (error) {
     throw error
   }
 }
@@ -134,6 +143,7 @@ async transferLead(staffId: string, leadData: string[]): Promise<any> {
         throw error
       }
   }
+
 
   // async deleteLead(leadId: string): Promise<any> {
   //     return { success: true, message: `Lead ${leadId} deleted` };

@@ -113,4 +113,16 @@ async transferLead(req:Request, res:Response):Promise<void>{
         res.status(STATUS_CODE.INTERNAL_SERVER_ERROR).json({status: false, message: MESSAGE_CONST.INTERNAL_SERVER_ERROR})
     }
 }
+
+async deleteMultipleLeads(req:Request, res:Response):Promise<void>{
+    try {
+        const {leadStatus =-1, leadList} = req.body
+        const response = await this.__leadService.deleteMultipleLead(Number(leadStatus), leadList) 
+        if(response)
+            res.status(STATUS_CODE.OK).json({status: true, message:MESSAGE_CONST.UPDATION_SUCCESS})
+
+    } catch (error) {
+        res.status(STATUS_CODE.INTERNAL_SERVER_ERROR).json({status: false, message:MESSAGE_CONST.INTERNAL_SERVER_ERROR})
+    }
+}
 }

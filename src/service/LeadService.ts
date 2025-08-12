@@ -61,5 +61,12 @@ export class LeadService implements ILeadService{
         throw error
       }
     }
+    async deleteMultipleLead(status: number, leadList: string[]): Promise<any> {
+      try {
+        return await this.__leadRepository.deleteMultipleLeads(status, leadList)
+      } catch (error) {
+        throw error
+      }
+    }
 
 }
