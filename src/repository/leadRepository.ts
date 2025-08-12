@@ -2,6 +2,8 @@ import { ILeadRepository } from "./interface/ILeadRepository";
 import Lead from "../model/leadModel";
 import { BulkLeadTransformType, BulkLeadType, LeadBasicType, LeadFilterType, LeadresponseType, LeadType, UpdatedLeadType } from "../types/leadTypes";
 import mongoose from "mongoose";
+import { leadsMapper } from "../dto/dtoMapper/leadDtoMapper";
+import { LeadIdWithAgent } from "../types/lead-transfer-type";
 export class LeadRepository implements ILeadRepository {
   async createLead(leadData: LeadBasicType): Promise<any> {
     try {
@@ -72,7 +74,6 @@ async getLeadByStatus(
         { phoneNumber: { $regex: search, $options: "i" } }
       ];
     }
-    console.log("matchConditions", matchConditions)
     const leadList = await Lead.aggregate([
       { $match: matchConditions },
       {
@@ -114,8 +115,8 @@ async createBulkLead(leadData: BulkLeadTransformType[]): Promise<any> {
 async transferLead(staffId: string, leadData: string[]): Promise<any> {
   try {
     const updatedData = await Lead.updateMany({_id:{$in: leadData}},{$set:{assignedAgent: staffId}})
-    console.log("updatedData",updatedData)
-    return updatedData
+    const updatedDataList = await Lead.find({ _id: { $in: leadData } });
+    return updatedDataList
   } catch (error) {
     throw error
   }
@@ -143,6 +144,26 @@ async deleteMultipleLeads(status: number, leadData: string[]): Promise<any> {
         throw error
       }
   }
+
+  async getLeadsById(leadList: string[]): Promise<LeadIdWithAgent[]> {
+  try {
+    const response = await Lead.find(
+      { _id: { $in: leadList } },
+      { _id: 1, assignedAgent: 1 }
+    );
+
+    const list: LeadIdWithAgent[] = response.map((data) => ({
+      _id: data._id.toString(), 
+      assignedAgent: data.assignedAgent
+        ? data.assignedAgent.toString()
+        : "" 
+    }));
+
+    return list;
+  } catch (error) {
+    throw error;
+  }
+}
 
 
   // async deleteLead(leadId: string): Promise<any> {

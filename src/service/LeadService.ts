@@ -1,8 +1,10 @@
 import mongoose from "mongoose"
-import { leadsMapper } from "../dto/dtoMapper/leadDtoMapper"
+import { leadDtoMapper, leadsMapper } from "../dto/dtoMapper/leadDtoMapper"
 import { ILeadRepository } from "../repository/interface/ILeadRepository"
-import { BulkLeadTransformType, BulkLeadType, LeadBasicType, LeadFilterType, UpdatedLeadType } from "../types/leadTypes"
+import { BulkLeadTransformType, BulkLeadType, LeadBasicType, LeadFilterType, LeadType, UpdatedLeadType } from "../types/leadTypes"
 import { ILeadService } from "./interface/ILeadService"
+import { LeadDto } from "../dto/dtoTypes/leadDto"
+import { LeadIdWithAgent } from "../types/lead-transfer-type"
 
 
 export class LeadService implements ILeadService{
@@ -54,7 +56,7 @@ export class LeadService implements ILeadService{
       }
     }
 
-    async transferLead(staffId: string, leadList: string[]): Promise<any> {
+    async transferLead(staffId: string, leadList: string[]): Promise<LeadType[]> {
       try {
         return await this.__leadRepository.transferLead(staffId, leadList)
       } catch (error) {
@@ -64,6 +66,16 @@ export class LeadService implements ILeadService{
     async deleteMultipleLead(status: number, leadList: string[]): Promise<any> {
       try {
         return await this.__leadRepository.deleteMultipleLeads(status, leadList)
+      } catch (error) {
+        throw error
+      }
+    }
+
+    async getLeadById(leadId: string[]): Promise<LeadIdWithAgent[]> {
+      try {
+        let data =  this.__leadRepository.getLeadsById(leadId)
+        return data
+        
       } catch (error) {
         throw error
       }

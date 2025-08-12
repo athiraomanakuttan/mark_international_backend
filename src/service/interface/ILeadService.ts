@@ -1,10 +1,13 @@
-import { BulkLeadType, LeadBasicType, LeadFilterType, UpdatedLeadType } from "../../types/leadTypes";
+import { LeadDto } from "../../dto/dtoTypes/leadDto";
+import { LeadIdWithAgent } from "../../types/lead-transfer-type";
+import { BulkLeadType, LeadBasicType, LeadFilterType, LeadType, UpdatedLeadType } from "../../types/leadTypes";
 
 export interface ILeadService{
     createLead(leadData:LeadBasicType):Promise<any>
     getLeadByStatus(status:number,page:number,limit:number,filterData:LeadFilterType,search:string):Promise<any>
     createBulkLead(userId:string, leadData:BulkLeadType[]):Promise<any>
     updateLead(leadId:string, leadData:UpdatedLeadType):Promise<any>
-    transferLead(staffId: string, leadList:string[]):Promise<any>
+    transferLead(staffId: string, leadList:string[]):Promise<LeadType[]>
     deleteMultipleLead(status:number, leadList:string[]):Promise<any>
+    getLeadById(leadId:string[]):Promise<LeadIdWithAgent[]>
 }

@@ -1,4 +1,5 @@
-import { BulkLeadTransformType, BulkLeadType, LeadBasicType, LeadFilterType, UpdatedLeadType } from "../../types/leadTypes";
+import { LeadIdWithAgent } from "../../types/lead-transfer-type";
+import { BulkLeadTransformType, BulkLeadType, LeadBasicType, LeadFilterType, LeadType, UpdatedLeadType } from "../../types/leadTypes";
 import { LeadresponseType } from "../../types/leadTypes";
 
 export interface ILeadRepository {
@@ -9,5 +10,6 @@ export interface ILeadRepository {
     updateLead(leadId: string, leadData: UpdatedLeadType): Promise<any>;
     transferLead(staffId:string, leadData:string[]):Promise<any>
     deleteMultipleLeads(status:number, leadData:string[]):Promise<any>
+    getLeadsById(leadList:string[]):Promise<LeadIdWithAgent[]>
     // deleteLead(leadId: string): Promise<any>;
 }

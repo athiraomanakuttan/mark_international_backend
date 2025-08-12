@@ -1,4 +1,4 @@
-import { LeadType } from "../../types/leadTypes";
+import { LeadBasicType, LeadType } from "../../types/leadTypes";
 import { formatDate } from "../../utils/formatDate";
 import { LeadDto } from "../dtoTypes/leadDto";
 
@@ -21,8 +21,10 @@ export const leadDtoMapper = (lead:LeadType): LeadDto=>{
 
     
 }
-export const leadsMapper = (leads:LeadType[])=>{
+export const leadsMapper = (leads:LeadType[] )=>{
     const leadsData = leads.map((lead)=> leadDtoMapper(lead))
     return leadsData
 } 
+
+
 

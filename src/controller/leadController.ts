@@ -3,11 +3,17 @@ import { MESSAGE_CONST } from "../constant/MessageConst";
 import { ILeadService } from "../service/interface/ILeadService";
 import { Request,Response } from "express";
 import { CustomRequestType } from "../types/requestType";
-import { BulkLeadType, LeadBasicType, LeadFilterType } from "../types/leadTypes";
+import { BulkLeadType, LeadBasicType, LeadFilterType, LeadType } from "../types/leadTypes";
+import { ITransferLeadService } from "../service/interface/ITransferLeadService";
+import { ILeadTransfer } from "../model/leadTransfer";
+import { LeadDto } from "../dto/dtoTypes/leadDto";
+import { LeadTransferType } from "../types/lead-transfer-type";
 export class LeadController{
     private __leadService:ILeadService
-    constructor(leadService:ILeadService){
+    private _transferService: ITransferLeadService
+    constructor(leadService:ILeadService, transferService:ITransferLeadService){
         this.__leadService = leadService
+        this._transferService = transferService
     }
 
     async createLead(req:CustomRequestType, res:Response):Promise<void>{
@@ -51,7 +57,6 @@ export class LeadController{
   search?: string;
 };
     const filterdata = JSON.parse(filter)
-    console.log("filterdata",filterdata)
             const response = await this.__leadService.getLeadByStatus(Number(status),Number(page),Number(limit), filterdata as LeadFilterType,search)
             if(response)
                 res.status(STATUS_CODE.OK).json({status:true, message:"data fetched successfully", data:response})
@@ -95,6 +100,7 @@ async updateLead(req:Request, res:Response):Promise<void>{
 async transferLead(req:Request, res:Response):Promise<void>{
     try {
         const {staffId, leadList} = req.body
+        
         if(!staffId){
         res.status(STATUS_CODE.BAD_REQUEST).json({status: false, message: "staff id is empty"})
             return
@@ -104,12 +110,22 @@ async transferLead(req:Request, res:Response):Promise<void>{
             res.status(STATUS_CODE.BAD_REQUEST).json({status: false, message: "lead lsit  is empty"})
             return
         }
+        const leadDetails = await this.__leadService.getLeadById(leadList)
+        const transferData:LeadTransferType[] = []
+        leadDetails.forEach((lead)=>{
+            transferData.push({
+                leadId:lead._id,
+                fromStaff:lead.assignedAgent,
+                toStaff:staffId,
+            })
+        })
         const response = await this.__leadService.transferLead(staffId, leadList)
         if(response){
+        const transferHistory = await this._transferService.createTransferHistory(transferData)
         res.status(STATUS_CODE.OK).json({status: true, message: MESSAGE_CONST.UPDATION_SUCCESS})
         }
     } catch (error) {
-        console.log("===>=>",error)
+        console.log(error)
         res.status(STATUS_CODE.INTERNAL_SERVER_ERROR).json({status: false, message: MESSAGE_CONST.INTERNAL_SERVER_ERROR})
     }
 }

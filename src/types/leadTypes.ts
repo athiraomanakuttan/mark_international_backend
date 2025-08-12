@@ -1,7 +1,8 @@
-import mongoose from "mongoose"
+import mongoose, { Types } from "mongoose"
 import { UserAuthType } from "./authTypes"
 import { IUser } from "./modelTypes"
 export interface LeadBasicType{
+  _id?: Types.ObjectId;
     name: string,
 phoneNumber: string,
 leadType: number,
