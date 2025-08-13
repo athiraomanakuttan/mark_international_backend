@@ -12,5 +12,6 @@ export interface ILeadRepository {
     transferLead(staffId:string, leadData:string[]):Promise<any>
     deleteMultipleLeads(status:number, leadData:string[]):Promise<any>
     getLeadsById(leadList:string[]):Promise<LeadIdWithAgent[]>
+    leadAssignToStaff(staffId: string, leadList:string[]):Promise<any>
     // deleteLead(leadId: string): Promise<any>;
 }

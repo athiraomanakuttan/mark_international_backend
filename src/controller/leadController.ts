@@ -167,4 +167,26 @@ async deleteMultipleLeads(req:Request, res:Response):Promise<void>{
         res.status(STATUS_CODE.INTERNAL_SERVER_ERROR).json({status: false, message:MESSAGE_CONST.INTERNAL_SERVER_ERROR})
     }
 }
+
+async leadAssignToStaff(req:Request, res:Response):Promise<void>{
+    try{
+        const {leadList, staffId} = req.body
+        if(!staffId){
+            res.status(STATUS_CODE.BAD_REQUEST).json({status: false, message:MESSAGE_CONST.BAD_REQUEST})
+            return
+        }
+        if(leadList.length<=0){
+        res.status(STATUS_CODE.BAD_REQUEST).json({status: false, message:MESSAGE_CONST.BAD_REQUEST})
+            return
+        }
+        const response = await this.__leadService.leadAssignToStaff(staffId, leadList)
+        if(response){
+        res.status(STATUS_CODE.OK).json({status: true, message:MESSAGE_CONST.UPDATION_SUCCESS})
+            
+        }
+    }catch(err){
+        res.status(STATUS_CODE.INTERNAL_SERVER_ERROR).json({status: false, message:MESSAGE_CONST.INTERNAL_SERVER_ERROR})
+
+    }
+}
 }

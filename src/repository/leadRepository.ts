@@ -281,7 +281,14 @@ async getUnassignedLead(
   }
 }
 
-
+async leadAssignToStaff(staffId: string, leadList: string[]): Promise<any> {
+  try {
+      const response = await Lead.updateMany({_id:{$in: leadList}},{$set:{assignedAgent: staffId}})
+      return response
+  } catch (error) {
+    throw error
+  }
+}
 
 
   // async deleteLead(leadId: string): Promise<any> {
