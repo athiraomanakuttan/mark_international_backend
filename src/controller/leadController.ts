@@ -66,6 +66,32 @@ export class LeadController{
         }
     }
 
+    async getUnassignedLead(req:Request, res:Response):Promise<void>{
+        try {
+           const {
+  status = "7",
+  page = "1",
+  limit = "10",
+  filter = "",
+  search = ""
+} = req.query as {
+  status?: string;
+  page?: string;
+  limit?: string;
+  filter?: string;
+  search?: string;
+};
+    const filterdata = JSON.parse(filter)
+            const response = await this.__leadService.getUnassignedLead(Number(status),Number(page),Number(limit), filterdata as LeadFilterType,search)
+            if(response)
+                res.status(STATUS_CODE.OK).json({status:true, message:"data fetched successfully", data:response})
+
+        } catch (error) {
+            res.status(STATUS_CODE.INTERNAL_SERVER_ERROR).json({status: false, message:MESSAGE_CONST.INTERNAL_SERVER_ERROR})
+        }
+    }
+
+
  async createBulkLead(req:CustomRequestType, res:Response):Promise<void>{
     try {
         const userId = req.user?.id

@@ -26,6 +26,7 @@ router.post('/',(req,res)=>leadController.createLead(req,res))
 router.get('/', (req:Request, res:Response)=> leadController.getLead(req,res))
 router.post('/upload', (req:Request, res:Response)=>leadController.createBulkLead(req,res))
 router.patch('/transfer', (req:Request,res:Response)=> leadController.transferLead(req, res))
+router.get('/unassigned', (req:Request,res:Response)=> leadController.getUnassignedLead(req, res))
 router.patch('/delete',(req:Request, res:Response)=> leadController.deleteMultipleLeads(req,res))
 
 router.patch('/:id',(req:Request, res:Response)=> leadController.updateLead(req,res))

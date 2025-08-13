@@ -81,4 +81,14 @@ export class LeadService implements ILeadService{
       }
     }
 
+    async getUnassignedLead(status: number = 7, page: number = 1, limit: number = 10, filterData:LeadFilterType, search:string): Promise<any> {
+        try {
+            const response = await this.__leadRepository.getUnassignedLead(status,page,limit, filterData, search)
+            const leadData = leadsMapper(response.lead)
+            return {lead:leadData, totalRecords:response.totalRecords}
+        } catch (error) {
+            throw error
+        }
+    }
+
 }
