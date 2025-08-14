@@ -93,7 +93,9 @@ export class LeadService implements ILeadService{
 
     async leadAssignToStaff(staffId: string, leadList: string[]): Promise<any> {
       try{
-        return this.__leadRepository.leadAssignToStaff(staffId, leadList)
+        const response =  this.__leadRepository.leadAssignToStaff(staffId, leadList)
+       
+        return response
       }catch(err){
         throw err
       }

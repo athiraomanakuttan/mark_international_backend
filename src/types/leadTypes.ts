@@ -92,3 +92,4 @@ export  interface UpdatedLeadType    {
     createdByData ?: IUser[]
     
 }
+
