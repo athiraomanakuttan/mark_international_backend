@@ -19,5 +19,6 @@ router.get('/', (req:Request, res:Response) => staffController.getActiveStaff(re
 router.patch('/:id', upload.single('profilePic'), (req:Request, res:Response) => staffController.updateStaff(req, res))
 router.patch('/:id/:status', (req:Request, res:Response) => staffController.updateStaffStatus(req, res))
 router.get('/get-all-active', (req:Request,res:Response)=> staffController.getAllActive(req,res))
+router.get('/:id',(req:Request,res:Response)=> staffController.getStaffById(req,res))
 
 export default router 

@@ -58,4 +58,12 @@ export class StaffService implements IStaffService {
     async getAllActive(): Promise<UserData[]> {
         return await this.__staffRepository.getAllActive()
     }
+
+    async getStaffById(id: string): Promise<any> {
+        try {
+            return await this.__staffRepository.getStaffById(id)
+        } catch (error) {
+            throw error
+        }
+    }
 }

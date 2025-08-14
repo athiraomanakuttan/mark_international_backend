@@ -14,47 +14,79 @@ class StaffController {
     try {
       const staffData: StaffBasicType = req.body;
       if (!staffData || !staffData.name) {
-        res.status(STATUS_CODE.BAD_REQUEST).json({ error: "Invalid staff data" });
+        res
+          .status(STATUS_CODE.BAD_REQUEST)
+          .json({ error: "Invalid staff data" });
         return;
       }
       const createdStaff = await this.__staffService.createStaff(staffData);
       console.log("Created staff:", createdStaff);
-      res.status(STATUS_CODE.CREATED).json({status: true, message:"Staff created successfully", data: createdStaff});
+      res
+        .status(STATUS_CODE.CREATED)
+        .json({
+          status: true,
+          message: "Staff created successfully",
+          data: createdStaff,
+        });
     } catch (err: any) {
-      console.log("error in controller",err)
+      console.log("error in controller", err);
       if (err.code === 11000 && err.keyPattern?.phoneNumber) {
-      res.status(STATUS_CODE.INTERNAL_SERVER_ERROR).json({ status: false, message: "Phone number already in use" });
-      return;}
-      res.status(STATUS_CODE.INTERNAL_SERVER_ERROR).json({ status: false, message: "Failed to create staff" });
+        res
+          .status(STATUS_CODE.INTERNAL_SERVER_ERROR)
+          .json({ status: false, message: "Phone number already in use" });
+        return;
+      }
+      res
+        .status(STATUS_CODE.INTERNAL_SERVER_ERROR)
+        .json({ status: false, message: "Failed to create staff" });
     }
   }
 
   async getActiveStaff(req: Request, res: Response): Promise<void> {
     try {
-      const {page = 1,limit = 10, status=1, role = "staff"} = req.query;
-      const staffList = await this.__staffService.getActiveStaff(Number(page), Number(limit), String(role),Number(status));
+      const { page = 1, limit = 10, status = 1, role = "staff" } = req.query;
+      const staffList = await this.__staffService.getActiveStaff(
+        Number(page),
+        Number(limit),
+        String(role),
+        Number(status)
+      );
       res.status(STATUS_CODE.OK).json({ status: true, data: staffList });
     } catch (error) {
       console.log("error in controller", error);
-      res.status(STATUS_CODE.INTERNAL_SERVER_ERROR).json({ status: false, message: "Failed to retrieve staff" });
+      res
+        .status(STATUS_CODE.INTERNAL_SERVER_ERROR)
+        .json({ status: false, message: "Failed to retrieve staff" });
     }
-
   }
 
   async updateStaff(req: Request, res: Response): Promise<void> {
     try {
       const staffId = req.params.id;
       const staffData: StaffUpdateType = req.body;
-      console.log("staffData", staffData)
+      console.log("staffData", staffData);
       if (!staffId || !staffData) {
-        res.status(STATUS_CODE.BAD_REQUEST).json({ error: "Invalid staff ID or data" });
+        res
+          .status(STATUS_CODE.BAD_REQUEST)
+          .json({ error: "Invalid staff ID or data" });
         return;
       }
-      const updatedStaff = await this.__staffService.updateStaff(staffId, staffData);
-      res.status(STATUS_CODE.OK).json({ status: true, message: "Staff updated successfully", data: updatedStaff });
+      const updatedStaff = await this.__staffService.updateStaff(
+        staffId,
+        staffData
+      );
+      res
+        .status(STATUS_CODE.OK)
+        .json({
+          status: true,
+          message: "Staff updated successfully",
+          data: updatedStaff,
+        });
     } catch (error) {
       console.log("error in controller", error);
-      res.status(STATUS_CODE.INTERNAL_SERVER_ERROR).json({ status: false, message: "Failed to update staff" });
+      res
+        .status(STATUS_CODE.INTERNAL_SERVER_ERROR)
+        .json({ status: false, message: "Failed to update staff" });
     }
   }
 
@@ -67,26 +99,75 @@ class StaffController {
         res.status(STATUS_CODE.BAD_REQUEST).json({ error: "Invalid staff ID" });
         return;
       }
-      if(isNaN(status) || status>1 || status<-1){
-        res.status(STATUS_CODE.BAD_REQUEST).json({ error: "Invalid status value" });
+      if (isNaN(status) || status > 1 || status < -1) {
+        res
+          .status(STATUS_CODE.BAD_REQUEST)
+          .json({ error: "Invalid status value" });
         return;
       }
-      const updatedStaff = await this.__staffService.updateStaffStatus(staffId, status);
-      res.status(STATUS_CODE.OK).json({ status: true, message: "Staff status updated successfully", data: updatedStaff });
+      const updatedStaff = await this.__staffService.updateStaffStatus(
+        staffId,
+        status
+      );
+      res
+        .status(STATUS_CODE.OK)
+        .json({
+          status: true,
+          message: "Staff status updated successfully",
+          data: updatedStaff,
+        });
     } catch (error) {
       console.log("error in controller", error);
-      res.status(STATUS_CODE.INTERNAL_SERVER_ERROR).json({ status: false, message: "Failed to update staff status" });
+      res
+        .status(STATUS_CODE.INTERNAL_SERVER_ERROR)
+        .json({ status: false, message: "Failed to update staff status" });
     }
-  } 
+  }
 
-  async getAllActive(req:Request, res:Response):Promise<void>{
+  async getAllActive(req: Request, res: Response): Promise<void> {
     try {
-      const response = await this.__staffService.getAllActive()
-      if(response){
-        res.status(STATUS_CODE.OK).json({status: true, message:"data fetched sucess", data: response})
+      const response = await this.__staffService.getAllActive();
+      if (response) {
+        res
+          .status(STATUS_CODE.OK)
+          .json({
+            status: true,
+            message: "data fetched sucess",
+            data: response,
+          });
       }
     } catch (error) {
-      res.status(STATUS_CODE.INTERNAL_SERVER_ERROR).json({status: false, meessage:MESSAGE_CONST.INTERNAL_SERVER_ERROR, data:[]})
+      res
+        .status(STATUS_CODE.INTERNAL_SERVER_ERROR)
+        .json({
+          status: false,
+          meessage: MESSAGE_CONST.INTERNAL_SERVER_ERROR,
+          data: [],
+        });
+    }
+  }
+
+  async getStaffById(req: Request, res: Response): Promise<void> {
+    try {
+      const { id } = req.params;
+      if (!id) {
+        res
+          .status(STATUS_CODE.INTERNAL_SERVER_ERROR)
+          .json({
+            status: false,
+            message: MESSAGE_CONST.INTERNAL_SERVER_ERROR,
+          });
+        return;
+      }
+      const response = await this.__staffService.getStaffById(id);
+      if (response)
+        res
+          .status(STATUS_CODE.OK)
+          .json({ status: true, message: MESSAGE_CONST.SUCCESS, data: response });
+    } catch (error) {
+      res
+        .status(STATUS_CODE.INTERNAL_SERVER_ERROR)
+        .json({ status: false, message: MESSAGE_CONST.INTERNAL_SERVER_ERROR });
     }
   }
 }

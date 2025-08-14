@@ -74,6 +74,14 @@ class StaffRepository implements IStaffRepository {
       throw new Error("Failed to retrieve active staff");
     } 
   }
+
+  async getStaffById(id: string): Promise<any> {
+    try {
+      return  await User.findOne({_id: id},{password:0})
+    } catch (error) {
+      throw error
+    }
+  }
 }
 
 export default StaffRepository;
