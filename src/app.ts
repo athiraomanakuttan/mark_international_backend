@@ -10,6 +10,7 @@ import authRouter from './router/authRouter';
 import adminStaffRouter from './router/admin/staffRouter';
 import leadRouter from './router/admin/leadRouter';
 import transferRouter from './router/transferLeadRouter'
+import adminDashboardRouter from './router/admin/dashboardRouter'
 
 const app = express();
 
@@ -43,5 +44,6 @@ app.use('/api/auth', authRouter);
 app.use('/api/admin/staff', adminStaffRouter);
 app.use('/api/admin/leads', leadRouter);
 app.use('/api/admin/transfer', transferRouter);
+app.use('/api/admin/dashboard', adminDashboardRouter);
 
 export default app;

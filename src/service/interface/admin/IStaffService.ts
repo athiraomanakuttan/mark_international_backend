@@ -8,4 +8,5 @@ export interface IStaffService {
     updateStaffStatus(staffId: string, status: number): Promise<UserData | null>;
     getAllActive():Promise<UserData[]>
     getStaffById(id: string):Promise<any>
+    
 }
