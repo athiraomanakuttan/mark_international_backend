@@ -9,8 +9,12 @@ import authRouter from './router/authRouter';
 // routers import
 import adminStaffRouter from './router/admin/staffRouter';
 import leadRouter from './router/admin/leadRouter';
-import transferRouter from './router/transferLeadRouter'
+import transferRouter from './router/admin/transferLeadRouter'
 import adminDashboardRouter from './router/admin/dashboardRouter'
+
+// sfatt
+import staffDashboardRouter from './router/staff/dashboardRouter'
+import staffLeadRouter from './router/staff/leadRouter'
 
 const app = express();
 
@@ -45,5 +49,8 @@ app.use('/api/admin/staff', adminStaffRouter);
 app.use('/api/admin/leads', leadRouter);
 app.use('/api/admin/transfer', transferRouter);
 app.use('/api/admin/dashboard', adminDashboardRouter);
+
+app.use('/api/staff/dashboard', staffDashboardRouter)
+app.use('/api/staff/leads', staffLeadRouter);
 
 export default app;

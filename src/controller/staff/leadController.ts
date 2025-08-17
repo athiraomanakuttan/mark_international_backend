@@ -1,0 +1,133 @@
+import { STATUS_CODE } from "../../constance/statusCode";
+import { MESSAGE_CONST } from "../../constant/MessageConst";
+import { Request, Response } from "express";
+import {
+  BulkLeadType,
+  LeadBasicType,
+  LeadFilterType,
+  LeadType,
+} from "../../types/leadTypes";
+import { ILeadService } from "../../service/interface/staff/ILeadService";
+import { CustomRequestType } from "../../types/requestType";
+import mongoose from "mongoose";
+export class LeadController {
+  private __leadService: ILeadService;
+  constructor(leadService: ILeadService) {
+    this.__leadService = leadService;
+  }
+
+  async createLead(req: CustomRequestType, res: Response): Promise<void> {
+    try {
+      const userId = req.user?.id;
+      console.log("user id ", userId);
+      if (!userId) {
+        res
+          .status(STATUS_CODE.BAD_REQUEST)
+          .json({ status: false, message: MESSAGE_CONST.UNAUTHORIZED });
+        return;
+      }
+      const leadData = req.body;
+
+      const finalData = { ...leadData, createdBy: userId , assignedAgent:new mongoose.Types.ObjectId(userId)} as LeadBasicType;
+      const createData = await this.__leadService.createLead(finalData);
+      if (createData) {
+        res
+          .status(STATUS_CODE.CREATED)
+          .json({ status: true, message: "lead Created sucessfully" });
+        return;
+      }
+      res
+        .status(STATUS_CODE.INTERNAL_SERVER_ERROR)
+        .json({ status: false, message: "unable to create lead", data: null });
+    } catch (error) {
+      console.log(error);
+      res
+        .status(STATUS_CODE.INTERNAL_SERVER_ERROR)
+        .json({ status: false, message: "unable to create lead", data: null });
+    }
+  }
+
+  async getLead(req: CustomRequestType, res: Response): Promise<void> {
+    try {
+      const {
+        status = "7",
+        page = "1",
+        limit = "10",
+        filter = "",
+        search = "",
+      } = req.query as {
+        status?: string;
+        page?: string;
+        limit?: string;
+        filter?: string;
+        search?: string;
+      };
+      const userId = req.user?.id;
+      if (!userId) {
+        res
+          .status(STATUS_CODE.UNAUTHORIZED)
+          .json({ status: false, message: MESSAGE_CONST.UNAUTHORIZED });
+        return;
+      }
+      const filterdata = JSON.parse(filter);
+      const response = await this.__leadService.getLeadByStatus(
+        Number(status),
+        Number(page),
+        Number(limit),
+        filterdata as LeadFilterType,
+        search,
+        userId
+      );
+      if (response)
+        res
+          .status(STATUS_CODE.OK)
+          .json({
+            status: true,
+            message: "data fetched successfully",
+            data: response,
+          });
+    } catch (error) {
+      res
+        .status(STATUS_CODE.INTERNAL_SERVER_ERROR)
+        .json({ status: false, message: MESSAGE_CONST.INTERNAL_SERVER_ERROR });
+    }
+  }
+
+  async updateLead(req: Request, res: Response): Promise<void> {
+    try {
+      const leadId = req.params.id;
+      const leadData = req.body;
+      const response = await this.__leadService.updateLead(leadId, leadData);
+      if (response)
+        res
+          .status(STATUS_CODE.OK)
+          .json({ status: true, message: MESSAGE_CONST.UPDATION_SUCCESS });
+    } catch (err) {
+      res
+        .status(STATUS_CODE.INTERNAL_SERVER_ERROR)
+        .json({ status: false, message: MESSAGE_CONST.INTERNAL_SERVER_ERROR });
+    }
+  }
+
+  
+
+  async deleteMultipleLeads(req: Request, res: Response): Promise<void> {
+    try {
+      const { leadStatus = -1, leadList } = req.body;
+      const response = await this.__leadService.deleteMultipleLead(
+        Number(leadStatus),
+        leadList
+      );
+      if (response)
+        res
+          .status(STATUS_CODE.OK)
+          .json({ status: true, message: MESSAGE_CONST.UPDATION_SUCCESS });
+    } catch (error) {
+      res
+        .status(STATUS_CODE.INTERNAL_SERVER_ERROR)
+        .json({ status: false, message: MESSAGE_CONST.INTERNAL_SERVER_ERROR });
+    }
+  }
+
+  
+}
