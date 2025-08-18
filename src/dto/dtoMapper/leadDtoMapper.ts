@@ -15,6 +15,8 @@ export const leadDtoMapper = (lead:LeadType): LeadDto=>{
         leadSource:lead.leadSource,
         status: lead.status,
         remarks:lead.remarks,
+        category: lead.leadType || 1,
+        priority : lead.priority,
         assignedAgent_id: lead?.assignedAgentData?.[0]?._id,
         assignedAgent_name: lead?.assignedAgentData?.[0]?.name
     }
