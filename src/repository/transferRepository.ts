@@ -19,7 +19,6 @@ export class TransferRepository implements ITransferRepository{
   search: string
 ): Promise<TransferResponseType> {
   try {
-    console.log("inide");
     const skip = (page - 1) * limit;
 
     // Base match conditions
@@ -60,7 +59,7 @@ export class TransferRepository implements ITransferRepository{
 
     // Aggregation pipeline
     const transferList = await TransferModel.aggregate([
-      { $match: matchConditions },
+      { $match:matchConditions },
       {
         $lookup: {
           from: "leads",
