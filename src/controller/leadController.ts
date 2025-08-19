@@ -9,12 +9,17 @@ import { ILeadTransfer } from "../model/leadTransfer";
 import { LeadDto } from "../dto/dtoTypes/leadDto";
 import { LeadTransferType } from "../types/lead-transfer-type";
 import { LEAD_PRIORITIES, LEAD_STATUS } from "../data/lead-data";
+import { ILeadHistoryService } from "../service/interface/ILeadHistoryService";
+import { ILeadHistory } from "../model/leadHistoryModel";
+import mongoose, { Mongoose } from "mongoose";
 export class LeadController{
     private __leadService:ILeadService
     private _transferService: ITransferLeadService
-    constructor(leadService:ILeadService, transferService:ITransferLeadService){
+    private _leadHistoryService: ILeadHistoryService;
+    constructor(leadService:ILeadService, transferService:ITransferLeadService, leadHistoryService:ILeadHistoryService){
         this.__leadService = leadService
         this._transferService = transferService
+        this._leadHistoryService = leadHistoryService
     }
 
     async createLead(req:CustomRequestType, res:Response):Promise<void>{
@@ -31,6 +36,21 @@ export class LeadController{
             const finalData = {...leadData, createdBy:userId} as LeadBasicType
             const createData = await this.__leadService.createLead(finalData)
             if(createData){
+                const leadHistoryData = {
+                    leadId: createData.id,
+                    createdBy: userId,
+                    historyType: 1
+                } as ILeadHistory
+                await this._leadHistoryService.createLeadHistory(leadHistoryData)
+                if(finalData.assignedAgent){
+                    const leadHistoryData = {
+                        leadId : createData.id,
+                        from : new mongoose.Types.ObjectId(userId),
+                        to : new mongoose.Types.ObjectId(finalData.assignedAgent),
+                        historyType: 4
+                    } as ILeadHistory
+                    await this._leadHistoryService.createLeadHistory(leadHistoryData)
+                }
                 res.status(STATUS_CODE.CREATED).json({status:true, message:"lead Created sucessfully"})
                 return
             }
@@ -103,8 +123,29 @@ export class LeadController{
         const leadData = req.body
         console.log(leadData,"userId", userId) 
         const response = await this.__leadService.createBulkLead(userId, leadData as BulkLeadType[])
-        if(response)
+        if(response){
+            if(Array.isArray(response) && response.length > 0){
+                response.forEach(async (rowData)=>{
+                    const createdLead = {
+                        leadId: rowData.id,
+                        createdBy: userId,
+                        historyType: 1
+                    } as ILeadHistory
+                    await this._leadHistoryService.createLeadHistory(createdLead)
+                    if(rowData.assignedAgent) {
+                        const data = {
+                            leadId: rowData.id,
+                            historyType: 4,
+                            to: rowData.assignedAgent,
+                            from:new mongoose.Types.ObjectId(userId),
+                        } as ILeadHistory
+                        await this._leadHistoryService.createLeadHistory(data)
+                    }
+                })
+               
+            }
             res.status(STATUS_CODE.OK).json({status: true, message:"file upload successfull"})
+        }
     } catch (error) {
         console.log("lead upload error in controller",error)
         res.status(STATUS_CODE.INTERNAL_SERVER_ERROR).json({status: false, message:MESSAGE_CONST.INTERNAL_SERVER_ERROR})

@@ -1,7 +1,7 @@
 import LeadHistory, { ILeadHistory} from "../model/leadHistoryModel";
 import { ILeadHistoryRepository } from "./interface/ILeadHistoryRepository";
 
-class LeadHistoryRepository implements ILeadHistoryRepository {
+export class LeadHistoryRepository implements ILeadHistoryRepository {
     async createLeadHistory(data: ILeadHistory): Promise<ILeadHistory> {
        try{
             const leadHistory = new LeadHistory(data);

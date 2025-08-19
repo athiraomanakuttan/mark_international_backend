@@ -2,7 +2,7 @@ import { ILeadHistory } from "../model/leadHistoryModel";
 import { ILeadHistoryRepository } from "../repository/interface/ILeadHistoryRepository";
 import { ILeadHistoryService } from "./interface/ILeadHistoryService";
 
-class LeadHistoryService implements ILeadHistoryService {
+export class LeadHistoryService implements ILeadHistoryService {
     private __leadHistoryRepository: ILeadHistoryRepository;
     constructor(leadHistoryRepository: ILeadHistoryRepository) {
         this.__leadHistoryRepository = leadHistoryRepository;

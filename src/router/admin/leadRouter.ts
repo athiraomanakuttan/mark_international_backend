@@ -7,14 +7,21 @@ import { adminAuthentication } from '../../middlewares/admin/adminAuthentication
 import { Request,Response,NextFunction } from 'express'
 import { TransferRepository } from '../../repository/transferRepository'
 import { TransferLeadService } from '../../service/TransferLeadService'
-import { TransferController } from '../../controller/TransferController'
+
+import { LeadHistoryRepository } from '../../repository/LeadHistoryRepository'
+import {LeadHistoryService} from '../../service/LeadHistoryService'
 
 const transferRepository = new TransferRepository()
 const transferService = new TransferLeadService(transferRepository)
 
 const leadRepository = new LeadRepository()
 const leadService = new LeadService(leadRepository)
-const leadController = new LeadController(leadService, transferService)
+
+const leadHistoryRepository = new LeadHistoryRepository()
+const leadHistoryService = new LeadHistoryService(leadHistoryRepository)
+
+const leadController = new LeadController(leadService, transferService, leadHistoryService)
+
 
 const router = Router()
 

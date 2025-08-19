@@ -12,10 +12,14 @@ import { CustomRequestType } from "../../types/requestType";
 import mongoose from "mongoose";
 import { LeadDto } from "../../dto/dtoTypes/leadDto";
 import { LEAD_PRIORITIES, LEAD_STATUS } from "../../data/lead-data";
+import { ILeadHistoryService } from "../../service/interface/ILeadHistoryService";
+import { ILeadHistory } from "../../model/leadHistoryModel";
 export class LeadController {
   private __leadService: ILeadService;
-  constructor(leadService: ILeadService) {
+  private _leadHistoryService: ILeadHistoryService;
+  constructor(leadService: ILeadService, leadHistoryService: ILeadHistoryService) {
     this.__leadService = leadService;
+    this._leadHistoryService = leadHistoryService;  
   }
 
   async createLead(req: CustomRequestType, res: Response): Promise<void> {
@@ -33,6 +37,12 @@ export class LeadController {
       const finalData = { ...leadData, createdBy: userId , assignedAgent:new mongoose.Types.ObjectId(userId)} as LeadBasicType;
       const createData = await this.__leadService.createLead(finalData);
       if (createData) {
+        const leadHistoryData = {
+          leadId: createData.id,
+          createdBy: userId,
+          historyType: 1
+        } as ILeadHistory;
+        await this._leadHistoryService.createLeadHistory(leadHistoryData);
         res
           .status(STATUS_CODE.CREATED)
           .json({ status: true, message: "lead Created sucessfully" });

@@ -5,10 +5,17 @@ import { LeadRepository } from '../../repository/staff/leadRepository'
 import { LeadService } from '../../service/staff/LeadService'
 import { LeadController } from '../../controller/staff/leadController'
 
+import { LeadHistoryRepository } from '../../repository/LeadHistoryRepository'
+import {LeadHistoryService} from '../../service/LeadHistoryService'
+
 
 const leadRepository = new LeadRepository()
 const leadService = new LeadService(leadRepository)
-const leadController = new LeadController(leadService)
+
+const leadHistoryRepository = new LeadHistoryRepository()
+const leadHistoryService = new LeadHistoryService(leadHistoryRepository)
+
+const leadController = new LeadController(leadService, leadHistoryService)
 
 const router = Router()
 
