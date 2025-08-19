@@ -138,7 +138,7 @@ async deleteMultipleLeads(status: number, leadData: string[]): Promise<any> {
 
   async updateLead(leadId: string, leadData: UpdatedLeadType): Promise<any> {
       try {
-        const response = await Lead.updateOne({_id:leadId},leadData)
+        const response = await Lead.findByIdAndUpdate({_id:leadId},leadData,{new:true})
         return response
       } catch (error) {
         throw error

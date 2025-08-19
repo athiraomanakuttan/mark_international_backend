@@ -12,6 +12,7 @@ import { LEAD_PRIORITIES, LEAD_STATUS } from "../data/lead-data";
 import { ILeadHistoryService } from "../service/interface/ILeadHistoryService";
 import { ILeadHistory } from "../model/leadHistoryModel";
 import mongoose, { Mongoose } from "mongoose";
+import { error } from "console";
 export class LeadController{
     private __leadService:ILeadService
     private _transferService: ITransferLeadService
@@ -152,15 +153,52 @@ export class LeadController{
     }
 }
 
-async updateLead(req:Request, res:Response):Promise<void>{
+async updateLead(req:CustomRequestType, res:Response):Promise<void>{
         try{
             const leadId = req.params.id
             const leadData = req.body
+            const userId = req.user?.id
+            if(!userId){
+                res.status(STATUS_CODE.UNAUTHORIZED).json({status: false, message:MESSAGE_CONST.UNAUTHORIZED})
+                return
+            }
+            const currentLeadData = await this.__leadService.getLeadById([leadId])
             const response = await this.__leadService.updateLead(leadId, leadData)
-            if(response)
+            if(response){
+                if (leadData.assignedAgent) {
+    const fromAgent = currentLeadData[0]?.assignedAgent && mongoose.Types.ObjectId.isValid(currentLeadData[0].assignedAgent)
+        ? new mongoose.Types.ObjectId(currentLeadData[0].assignedAgent)
+        : null;
+
+    const toAgent = mongoose.Types.ObjectId.isValid(leadData.assignedAgent)
+        ? new mongoose.Types.ObjectId(leadData.assignedAgent)
+        : null;
+
+    const historyData = {
+        leadId: new mongoose.Types.ObjectId(String(leadId)),
+        from: fromAgent,
+        to: toAgent,
+        updatedBy: new mongoose.Types.ObjectId(String(userId)),
+        historyType: 4
+    } as ILeadHistory;
+
+    await this._leadHistoryService.createLeadHistory(historyData);
+}
+
+                if(leadData.status){
+                    const historyData = {
+                        leadId: new mongoose.Types.ObjectId(String(leadId)),
+                        updatedStatus: leadData.status,
+                        updatedBy: new mongoose.Types.ObjectId(String(userId)),
+                        historyType: 2
+                    } as ILeadHistory
+                    await this._leadHistoryService.createLeadHistory(historyData)
+                }
                 res.status(STATUS_CODE.OK).json({status: true, message:MESSAGE_CONST.UPDATION_SUCCESS})
+            }
 
         }catch(err){
+            console.log("error===========", err)
             res.status(STATUS_CODE.INTERNAL_SERVER_ERROR).json({status:false, message:MESSAGE_CONST.INTERNAL_SERVER_ERROR})
         }
 }

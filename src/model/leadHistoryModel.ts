@@ -7,6 +7,7 @@ export interface  ILeadHistory{
     transferId?: mongoose.Types.ObjectId,
     deletedBy?: mongoose.Types.ObjectId,
     updatedBy?: mongoose.Types.ObjectId,
+    updatedStatus?:number,
     from?: mongoose.Types.ObjectId,
     to?: mongoose.Types.ObjectId
 }
@@ -17,6 +18,7 @@ const LeadHistorySchema = new Schema<ILeadHistory & Document>({
   transferId:{ type: Schema.Types.ObjectId, ref: 'Transfer', required: false },
   deletedBy: { type: Schema.Types.ObjectId, ref: 'User', required: false },
   updatedBy: { type: Schema.Types.ObjectId, ref: 'User', required: false },
+  updatedStatus:{type: Number, required: false},
   from: { type: Schema.Types.ObjectId, ref: 'User', required: false },
   to: { type: Schema.Types.ObjectId, ref: 'User', required: false }
 },{timestamps: true});
