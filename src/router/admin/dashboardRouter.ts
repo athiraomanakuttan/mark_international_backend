@@ -17,6 +17,7 @@ router.use(adminAuthentication as unknown as (req: Request, res: Response, next:
 
 router.get('/lead',(req:Request, res:Response)=>leadController.getLeadData(req,res))
 router.get('/staff-lead',(req:Request, res:Response)=>leadController.getStaffWiseReport(req,res))
+router.get('/lead/month-wise-report', (req:Request, res:Response)=>leadController.getMonthWiseReport(req,res))
 
 
 export default router

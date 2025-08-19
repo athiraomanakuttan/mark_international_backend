@@ -11,7 +11,14 @@ export class DashboardLeadController{
 
     async getLeadData(req:Request, res:Response):Promise<void>{
         try {
-            const response = await this.__dashboardLeadService.getDashboardLeadData()
+
+            // by default start of month and to current date
+            const startOfMonth = new Date(new Date().setDate(1));
+
+const fromDate = req.query.from ? new Date(req.query.from as string) : startOfMonth;
+const toDate   = req.query.to ? new Date(req.query.to as string) : new Date();
+
+const response = await this.__dashboardLeadService.getDashboardLeadData(fromDate, toDate);
             if(response)
                 res.status(STATUS_CODE.OK).json({status: true, message:MESSAGE_CONST.SUCCESS, data: response})
         } catch (error) {
@@ -28,6 +35,20 @@ export class DashboardLeadController{
             if(response)
                 res.status(STATUS_CODE.OK).json({status: true, message:MESSAGE_CONST.SUCCESS, data: response})
 
+        } catch (error) {
+            res.status(STATUS_CODE.INTERNAL_SERVER_ERROR).json({status: false, message:MESSAGE_CONST.INTERNAL_SERVER_ERROR})
+        }
+    }
+
+    async getMonthWiseReport(req:Request, res:Response):Promise<void>{
+        try {
+            const currentMonthStartDate = new Date(new Date().getFullYear(), new Date().getMonth(), 1);
+            const currentDate = new Date();
+            const prevMonthLastDate = new Date(new Date().getFullYear(), new Date().getMonth(), 0);
+            const prevMonthFirstDate = new Date(new Date().getFullYear(), new Date().getMonth()-1, 1);
+            const response = await this.__dashboardLeadService.getMonthWiseReport(currentMonthStartDate, currentDate, prevMonthFirstDate, prevMonthLastDate);
+            if(response)
+                res.status(STATUS_CODE.OK).json({status: true, message:MESSAGE_CONST.SUCCESS, data: response})
         } catch (error) {
             res.status(STATUS_CODE.INTERNAL_SERVER_ERROR).json({status: false, message:MESSAGE_CONST.INTERNAL_SERVER_ERROR})
         }

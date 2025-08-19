@@ -4,10 +4,10 @@ import LeadModel from "../../../model/leadModel";
 
 class DashboardLeadRepository implements IDashboardLeadRepository{
 
-    async getDashboardLeadData() {
+    async getDashboardLeadData(from:Date, to:Date) {
   try {
     const leadStats = await LeadModel.aggregate([
-      {$match: {status: {$in :[1,2,3,4,5,6]}}},
+      {$match: {status: {$in :[1,2,3,4,5,6]}, createdAt: {$gte: from, $lte: to}}},
       {
         $group: {
           _id: null,
@@ -130,6 +130,28 @@ console.log("data======================================", data)
   }
 }
 
+async getMonthWiseReport(currentMonthStartDate: Date, currentDate: Date, prevMonthFirstDate: Date, prevMonthLastDate: Date): Promise<any> {
+  try {
+    //get the current month total lead count without status -1 and 0
+    const currentMonthLeads = await LeadModel.countDocuments({
+      createdAt: { $gte: currentMonthStartDate, $lte: currentDate },
+      status: { $nin: [-1, 0] }
+    });
+
+    //get the previous month total lead count without status -1 and 0
+    const prevMonthLeads = await LeadModel.countDocuments({
+      createdAt: { $gte: prevMonthFirstDate, $lte: prevMonthLastDate },
+      status: { $nin: [-1, 0] }
+    });
+
+    return {
+      currentMonthLeads,
+      prevMonthLeads
+    };
+  } catch (error) {
+    throw error;
+  }
+}
 }
 
 
