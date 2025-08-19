@@ -7,5 +7,6 @@ export interface ILeadService{
     createBulkLead(userId:string, leadData:BulkLeadType[]):Promise<any>
     updateLead(leadId:string, leadData:UpdatedLeadType):Promise<any>
     deleteMultipleLead(status:number, leadList:string[]):Promise<any>
-    
+    getLeadforExport(filterdata:LeadFilterType,search: string, staffId: string):Promise<any>
+      
 }

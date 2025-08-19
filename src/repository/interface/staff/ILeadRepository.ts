@@ -7,4 +7,5 @@ export interface ILeadRepository {
     createBulkLead(leadData: BulkLeadTransformType[]):Promise<any>
     updateLead(leadId: string, leadData: UpdatedLeadType): Promise<any>;
     deleteMultipleLeads(status:number, leadData:string[]):Promise<any>
+    getLeadforExport( filterData:LeadFilterType, search:string, staffId:string):Promise<LeadType[]>
 }

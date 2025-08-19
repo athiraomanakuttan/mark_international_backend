@@ -8,6 +8,7 @@ import { ITransferLeadService } from "../service/interface/ITransferLeadService"
 import { ILeadTransfer } from "../model/leadTransfer";
 import { LeadDto } from "../dto/dtoTypes/leadDto";
 import { LeadTransferType } from "../types/lead-transfer-type";
+import { LEAD_PRIORITIES, LEAD_STATUS } from "../data/lead-data";
 export class LeadController{
     private __leadService:ILeadService
     private _transferService: ITransferLeadService
@@ -189,4 +190,46 @@ async leadAssignToStaff(req:Request, res:Response):Promise<void>{
 
     }
 }
+
+
+async getExportLead(req: Request, res: Response): Promise<void> {
+  try {
+    const { filter = "", search = "" } = req.query as {
+      filter?: string;
+      search?: string;
+    };
+
+    const filterdata = JSON.parse(filter);
+    const response = await this.__leadService.getLeadforExport(
+      filterdata as LeadFilterType,
+      search
+    );
+
+    if (response) {
+      const header = "Name,Phone,Category,Status,Priority,Created Date,time,Assigned Staff,Created by\n";
+      const rows = (response as LeadDto[])
+        .map((l: LeadDto) =>{
+            const priority = LEAD_PRIORITIES.find((data) => data.value === l.priority)?.name || 'N/A';
+            const status = LEAD_STATUS.find((data) => data.value === l.status)?.name  || 'N/A';
+            return `${l.name},${l.phoneNumber},${l.category},${status},${priority},${l.createdAt},${l.assignedAgent_name ?? ""},${l.createdByName ?? ""}\n`;
+    })
+        .join("\n");
+
+      const csv = header + rows;
+
+      res.setHeader("Content-Disposition", "attachment; filename=leads.csv");
+      res.setHeader("Content-Type", "text/csv");
+      res.status(200).send(csv);
+      return;
+    }
+
+    res.status(404).json({ status: false, message: "No leads found" });
+  } catch (error) {
+    res
+      .status(500)
+      .json({ status: false, message: "Internal Server Error" });
+  }
+}
+
+
 }

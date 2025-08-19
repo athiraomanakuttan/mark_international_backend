@@ -10,6 +10,8 @@ import {
 import { ILeadService } from "../../service/interface/staff/ILeadService";
 import { CustomRequestType } from "../../types/requestType";
 import mongoose from "mongoose";
+import { LeadDto } from "../../dto/dtoTypes/leadDto";
+import { LEAD_PRIORITIES, LEAD_STATUS } from "../../data/lead-data";
 export class LeadController {
   private __leadService: ILeadService;
   constructor(leadService: ILeadService) {
@@ -109,8 +111,6 @@ export class LeadController {
     }
   }
 
-  
-
   async deleteMultipleLeads(req: Request, res: Response): Promise<void> {
     try {
       const { leadStatus = -1, leadList } = req.body;
@@ -122,6 +122,56 @@ export class LeadController {
         res
           .status(STATUS_CODE.OK)
           .json({ status: true, message: MESSAGE_CONST.UPDATION_SUCCESS });
+    } catch (error) {
+      res
+        .status(STATUS_CODE.INTERNAL_SERVER_ERROR)
+        .json({ status: false, message: MESSAGE_CONST.INTERNAL_SERVER_ERROR });
+    }
+  }
+
+    async getExportLead(req: CustomRequestType, res: Response): Promise<void> {
+    try {
+      const {
+        
+        filter = "",
+        search = "",
+      } = req.query as {
+        status?: string;
+        page?: string;
+        limit?: string;
+        filter?: string;
+        search?: string;
+      };
+      const userId = req.user?.id;
+      if (!userId) {
+        res
+          .status(STATUS_CODE.UNAUTHORIZED)
+          .json({ status: false, message: MESSAGE_CONST.UNAUTHORIZED });
+        return;
+      }
+      const filterdata = JSON.parse(filter);
+      const response = await this.__leadService.getLeadforExport(
+        filterdata as LeadFilterType,
+        search,
+        userId
+      );
+      if (response) {
+      const header = "Name,Phone,Category,Status,Priority,Created Date,time,Assigned Staff,Created by\n";
+      const rows = (response as LeadDto[])
+        .map((l: LeadDto) =>{
+            const priority = LEAD_PRIORITIES.find((data) => data.value === l.priority)?.name || 'N/A';
+            const status = LEAD_STATUS.find((data) => data.value === l.status)?.name  || 'N/A';
+            return `${l.name},${l.phoneNumber},${l.category},${status},${priority},${l.createdAt},${l.assignedAgent_name ?? ""},${l.createdByName ?? ""}\n`;
+    })
+        .join("\n");
+
+      const csv = header + rows;
+
+      res.setHeader("Content-Disposition", "attachment; filename=leads.csv");
+      res.setHeader("Content-Type", "text/csv");
+      res.status(200).send(csv);
+      return;
+    }
     } catch (error) {
       res
         .status(STATUS_CODE.INTERNAL_SERVER_ERROR)

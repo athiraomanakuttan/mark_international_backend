@@ -4,6 +4,7 @@ import { BulkLeadTransformType, BulkLeadType, LeadBasicType, LeadFilterType, Lea
 import { ILeadService } from "../interface/staff/ILeadService"
 import { ILeadRepository } from "../../repository/interface/staff/ILeadRepository"
 import { LeadIdWithAgent } from "../../types/lead-transfer-type"
+import { LeadDto } from "../../dto/dtoTypes/leadDto"
 
 
 
@@ -63,6 +64,16 @@ export class LeadService implements ILeadService{
       } catch (error) {
         throw error
       }
+    }
+
+    async getLeadforExport(filterData:LeadFilterType, search:string, staffId: string): Promise<LeadDto[]> {
+        try {
+            const response = await this.__leadRepository.getLeadforExport( filterData, search,staffId)
+            return leadsMapper(response)
+             
+        } catch (error) {
+            throw error
+        }
     }
 
     

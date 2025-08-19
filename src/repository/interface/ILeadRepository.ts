@@ -13,5 +13,6 @@ export interface ILeadRepository {
     deleteMultipleLeads(status:number, leadData:string[]):Promise<any>
     getLeadsById(leadList:string[]):Promise<LeadIdWithAgent[]>
     leadAssignToStaff(staffId: string, leadList:string[]):Promise<any>
+    getLeadforExport(filterData:LeadFilterType, search: string):Promise<LeadType[]>
     // deleteLead(leadId: string): Promise<any>;
 }

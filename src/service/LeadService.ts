@@ -101,4 +101,13 @@ export class LeadService implements ILeadService{
       }
     }
 
+    async getLeadforExport(filterData:LeadFilterType, search:string): Promise<LeadDto[]> {
+        try {
+            const response = await this.__leadRepository.getLeadforExport(filterData, search)
+            return leadsMapper(response)
+        } catch (error) {
+            throw error
+        }
+    }
+
 }

@@ -134,7 +134,88 @@ async deleteMultipleLeads(status: number, leadData: string[]): Promise<any> {
         throw error
       }
   }
+async getLeadforExport(
+  
+  filterData: LeadFilterType,
+  search: string,
+  staffId:string
+): Promise<LeadType[]> {
+  try {
+    
 
+    // Base match condition
+    const matchConditions: any = {assignedAgent: new mongoose.Types.ObjectId(staffId)};
+
+    // Apply date range filter
+    if (filterData.fromDate || filterData.toDate) {
+      matchConditions.createdAt = {};
+      if (filterData.fromDate) {
+        matchConditions.createdAt.$gte = new Date(filterData.fromDate);
+      }
+      if (filterData.toDate) {
+        matchConditions.createdAt.$lte = new Date(filterData.toDate);
+      }
+    }
+
+    // Apply array-based filters
+    if (filterData.leadCategory?.length) {
+      matchConditions.leadCategory = { $in: filterData.leadCategory };
+    }
+    if (filterData.leadStatus?.length) {
+      matchConditions.status = { $in: filterData.leadStatus };
+    }
+    if (filterData.priority?.length) {
+      matchConditions.priority = { $in: filterData.priority };
+    }
+    if (filterData.leadSource?.length) {
+      matchConditions.leadSource = { $in: filterData.leadSource };
+    }
+    if (filterData.staff?.length) {
+    matchConditions.assignedAgent = {
+    $in: filterData.staff.map(id => new mongoose.Types.ObjectId(id))
+  };
+  }
+
+    if (filterData.createBy?.length) {
+  matchConditions.createdBy = {
+    $in: filterData.createBy.map(id => new mongoose.Types.ObjectId(id))
+  };
+}
+
+    if (search?.trim()) {
+      matchConditions.$or = [
+        { name: { $regex: search, $options: "i" } },
+        { phoneNumber: { $regex: search, $options: "i" } }
+      ];
+    }
+    console.log("matched condition", matchConditions)
+
+    const leadList = await Lead.aggregate([
+      { $match: matchConditions },
+      {
+        $lookup: {
+          from: "users",
+          foreignField: "_id",
+          localField: "assignedAgent",
+          as: "assignedAgentData",
+        },
+      },
+      {
+        $lookup: {
+          from: "users",
+          foreignField: "_id",
+          localField: "createdBy",
+          as: "createdByData",
+        },
+      },
+      { $sort: { updatedAt: -1 } },
+    ]);
+
+    return leadList as LeadType[];
+  } catch (error) {
+    throw error;
+  }
+}
 
 
 }
