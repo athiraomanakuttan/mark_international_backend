@@ -11,7 +11,7 @@ export class LeadHistoryService implements ILeadHistoryService {
         return await this.__leadHistoryRepository.createLeadHistory(data);
     }
 
-    async getLeadHistory(id: string): Promise<any> {
-        return await this.__leadHistoryRepository.getLeadHistory(id);
+    async getLeadHistory(leadId: string, page: number, limit: number): Promise<any> {
+        return await this.__leadHistoryRepository.getLeadHistory(leadId, page, limit);
     }
-}
+}       

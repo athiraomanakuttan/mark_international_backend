@@ -16,6 +16,8 @@ import adminDashboardRouter from './router/admin/dashboardRouter'
 import staffDashboardRouter from './router/staff/dashboardRouter'
 import staffLeadRouter from './router/staff/leadRouter'
 
+import leadHistoryRouter from './router/leadHistoryRouter'
+
 const app = express();
 
 // ✅ Logging incoming requests
@@ -52,5 +54,6 @@ app.use('/api/admin/dashboard', adminDashboardRouter);
 
 app.use('/api/staff/dashboard', staffDashboardRouter)
 app.use('/api/staff/leads', staffLeadRouter);
+app.use('/api/lead-transfer', leadHistoryRouter)
 
 export default app;

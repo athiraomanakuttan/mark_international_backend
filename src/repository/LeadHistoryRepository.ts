@@ -7,12 +7,13 @@ export class LeadHistoryRepository implements ILeadHistoryRepository {
             const leadHistory = new LeadHistory(data);
             await leadHistory.save();
             return leadHistory;
-       }catch(err){ throw err}
+       }catch(err){ throw err} 
     }
 
-    async getLeadHistory(id: string): Promise<ILeadHistory | null> {
+    async getLeadHistory(leadId: string, page: number, limit: number): Promise<ILeadHistory | null> {
         try{
-            const leadHistory = await LeadHistory.findById(id);
+            const skip = (page - 1) * limit;
+            const leadHistory = await LeadHistory.findById(leadId).skip(skip).limit(limit);
             return leadHistory;
         }catch(err){ throw err}
     }
