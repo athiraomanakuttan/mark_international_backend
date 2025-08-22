@@ -3,6 +3,7 @@ import { formatDate } from "../../utils/formatDate";
 import { LeadDto } from "../dtoTypes/leadDto";
 
 export const leadDtoMapper = (lead:LeadType): LeadDto=>{
+    console.log("lead in mapper", lead)
     return {
         id:lead._id,
         name:lead.name,
@@ -17,6 +18,8 @@ export const leadDtoMapper = (lead:LeadType): LeadDto=>{
         remarks:lead.remarks,
         category: lead.leadType || 1,
         priority : lead.priority,
+        called_date: lead.called_date,
+        call_result: lead.call_result,
         assignedAgent_id: lead?.assignedAgentData?.[0]?._id,
         assignedAgent_name: lead?.assignedAgentData?.[0]?.name
     }

@@ -54,6 +54,6 @@ app.use('/api/admin/dashboard', adminDashboardRouter);
 
 app.use('/api/staff/dashboard', staffDashboardRouter)
 app.use('/api/staff/leads', staffLeadRouter);
-app.use('/api/lead-transfer', leadHistoryRouter)
+app.use('/api/lead-history', leadHistoryRouter)
 
 export default app;

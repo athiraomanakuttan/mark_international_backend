@@ -1,5 +1,4 @@
 import mongoose, { Types } from "mongoose"
-import { UserAuthType } from "./authTypes"
 import { IUser } from "./modelTypes"
 export interface LeadBasicType{
   _id?: Types.ObjectId;
@@ -13,6 +12,12 @@ address?: string,
 remarks?: string,
 leadSource?: number,
 category?: string,
+
+//new added
+called_date?: Date,
+call_result?:number,
+// new added
+
 status: number,
 referredBy: string,
 createdAt?: string,
@@ -36,9 +41,12 @@ export  interface LeadType    {
     createdBy : mongoose.Types.ObjectId,
     status: number,
     remarks ?: string,
+    called_date?: Date,
+    call_result?:number,
     createdAt:Date,
     updatedAt:Date,
     referredBy?:string,
+    
     assignedAgentData ?: IUser[],
     createdByData ?: IUser[]
     
@@ -53,6 +61,8 @@ export interface LeadFilterType {
   leadSource ?: (string | number)[];
   staff ?: (string | number)[];
   createBy ?: (string | number)[];
+  called_date?: Date,
+call_result?:number,
 }
 
 export interface BulkLeadType {
@@ -61,6 +71,8 @@ export interface BulkLeadType {
   countryCode?: string
   address ?: string
   leadCategory ?: string
+  called_date?: Date
+  call_result?:number
   staff ?: string
   leadSource ?: string
   priority ?: string,
@@ -87,6 +99,8 @@ export  interface UpdatedLeadType    {
     status ?: number,
     createdAt ?:Date,
     updatedAt ?:Date,
+    called_date?: Date,
+    call_result?:number,
     referredBy?:string,
     assignedAgentData ?: IUser[],
     createdByData ?: IUser[]

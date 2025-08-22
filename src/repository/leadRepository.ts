@@ -369,4 +369,34 @@ async getLeadforExport(
     throw error;
   }
 }
+
+async getFullLeadDataById(leadId: string): Promise<any | null> {
+  try {
+    const leadList = await Lead.aggregate([
+      { $match: {_id:new mongoose.Types.ObjectId(leadId)} },
+      {
+        $lookup: {
+          from: "users",
+          foreignField: "_id",
+          localField: "assignedAgent",
+          as: "assignedAgentData",
+        },
+      },
+      {
+        $lookup: {
+          from: "users",
+          foreignField: "_id",
+          localField: "createdBy",
+          as: "createdByData",
+        },
+      }
+    ]);
+    console.log("leadId", leadId)
+    console.log("leadList", leadList)
+    return leadList;
+  } catch (error) {
+    throw error;
+  }
+}
+
 }

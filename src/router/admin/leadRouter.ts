@@ -37,6 +37,7 @@ router.get('/unassigned', (req:Request,res:Response)=> leadController.getUnassig
 router.patch('/assign', (req:Request, res:Response)=> leadController.leadAssignToStaff(req,res))
 router.patch('/delete',(req:Request, res:Response)=> leadController.deleteMultipleLeads(req,res))
 
+
 router.patch('/:id',(req:Request, res:Response)=> leadController.updateLead(req,res))
 
 router.get('/export-lead', (req:Request, res:Response)=> leadController.getExportLead(req,res))

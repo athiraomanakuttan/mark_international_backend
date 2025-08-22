@@ -11,7 +11,7 @@ import { LeadTransferType } from "../types/lead-transfer-type";
 import { LEAD_PRIORITIES, LEAD_STATUS } from "../data/lead-data";
 import { ILeadHistoryService } from "../service/interface/ILeadHistoryService";
 import { ILeadHistory } from "../model/leadHistoryModel";
-import mongoose, { Mongoose } from "mongoose";
+import mongoose  from "mongoose";
 import { error } from "console";
 export class LeadController{
     private __leadService:ILeadService
@@ -39,7 +39,7 @@ export class LeadController{
             if(createData){
                 const leadHistoryData = {
                     leadId: createData.id,
-                    createdBy: userId,
+                    createdBy: new mongoose.Types.ObjectId(userId),
                     historyType: 1
                 } as ILeadHistory
                 await this._leadHistoryService.createLeadHistory(leadHistoryData)
@@ -129,7 +129,7 @@ export class LeadController{
                 response.forEach(async (rowData)=>{
                     const createdLead = {
                         leadId: rowData.id,
-                        createdBy: userId,
+                        createdBy: new mongoose.Types.ObjectId(userId),
                         historyType: 1
                     } as ILeadHistory
                     await this._leadHistoryService.createLeadHistory(createdLead)
@@ -309,6 +309,8 @@ async getExportLead(req: Request, res: Response): Promise<void> {
       .json({ status: false, message: "Internal Server Error" });
   }
 }
+
+
 
 
 }

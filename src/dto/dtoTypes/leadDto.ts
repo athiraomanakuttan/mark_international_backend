@@ -16,6 +16,8 @@ leadSource?: number,
 category?: string | number,
 status: number,
 referredBy ?: string,
+called_date?: Date | string;
+call_result?: number;
 createdAt: string,
 updatedAt: string,
 createdBy?:mongoose.Types.ObjectId

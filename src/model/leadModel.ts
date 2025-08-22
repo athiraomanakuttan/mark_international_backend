@@ -11,6 +11,8 @@ const leadSourceSchema = new Schema<LeadBasicType & Document>({
   priority: { type: Number, enum: [1, 2,3,4], default: 2 }, //[{name:"High", value:1}, {name:"Normal", value:2}, {name:"Low", value:3}, {name:"Negative", value:4}]
   address: { type: String },
   remarks: { type: String },
+  called_date: {type: Date, required: false},
+  call_result: { type: Number, enum: [1,2,3], required: false }, //  {name: "Confirmed", value: 1},{name: "Follow up", value: 2}, {name: "Rejected", value: 3},
   leadSource: { type: Number, enum:[1,2], default: 1 }, //[{name:"Direct Entry", value:1}, {name:"Lead from CSV", value:2}]
   category: { type: String, default:1, enum:[1]},
   createdBy:{type: Schema.Types.ObjectId, ref: 'User'},
