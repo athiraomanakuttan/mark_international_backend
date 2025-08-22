@@ -17,6 +17,7 @@ import staffDashboardRouter from './router/staff/dashboardRouter'
 import staffLeadRouter from './router/staff/leadRouter'
 
 import leadHistoryRouter from './router/leadHistoryRouter'
+import followupRouter from './router/followupRouter';
 
 const app = express();
 
@@ -55,5 +56,5 @@ app.use('/api/admin/dashboard', adminDashboardRouter);
 app.use('/api/staff/dashboard', staffDashboardRouter)
 app.use('/api/staff/leads', staffLeadRouter);
 app.use('/api/lead-history', leadHistoryRouter)
-
+app.use('/api/followup', followupRouter)
 export default app;
