@@ -93,7 +93,7 @@ async getLeadHistory(leadId: string, page: number, limit: number): Promise<any[]
                   then: {
                     $concat: [
                       "Transferred from ",
-                      { $ifNull: ["$fromUser.name", "N/A"] },
+                      { $ifNull: ["$fromUser.name", "MARK International"] },
                       " to ",
                       { $ifNull: ["$toUser.name", "N/A"] },
                       " by ",
