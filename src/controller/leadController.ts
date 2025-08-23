@@ -27,7 +27,6 @@ export class LeadController{
         try {
         
             const userId = req.user?.id
-            console.log("user id ",userId)
             if(!userId){
                 res.status(STATUS_CODE.BAD_REQUEST).json({status: false, message:MESSAGE_CONST.UNAUTHORIZED})
                 return
@@ -58,7 +57,6 @@ export class LeadController{
             res.status(STATUS_CODE.INTERNAL_SERVER_ERROR).json({status:false, message:"unable to create lead", data:null})
 
         } catch (error) {
-            console.log(error)
             res.status(STATUS_CODE.INTERNAL_SERVER_ERROR).json({status:false, message:"unable to create lead", data:null})
         }
     }
@@ -122,7 +120,6 @@ export class LeadController{
             return
         }
         const leadData = req.body
-        console.log(leadData,"userId", userId) 
         const response = await this.__leadService.createBulkLead(userId, leadData as BulkLeadType[])
         if(response){
             if(Array.isArray(response) && response.length > 0){
@@ -148,7 +145,6 @@ export class LeadController{
             res.status(STATUS_CODE.OK).json({status: true, message:"file upload successfull"})
         }
     } catch (error) {
-        console.log("lead upload error in controller",error)
         res.status(STATUS_CODE.INTERNAL_SERVER_ERROR).json({status: false, message:MESSAGE_CONST.INTERNAL_SERVER_ERROR})
     }
 }
@@ -198,7 +194,6 @@ async updateLead(req:CustomRequestType, res:Response):Promise<void>{
             }
 
         }catch(err){
-            console.log("error===========", err)
             res.status(STATUS_CODE.INTERNAL_SERVER_ERROR).json({status:false, message:MESSAGE_CONST.INTERNAL_SERVER_ERROR})
         }
 }
@@ -231,7 +226,6 @@ async transferLead(req:Request, res:Response):Promise<void>{
         res.status(STATUS_CODE.OK).json({status: true, message: MESSAGE_CONST.UPDATION_SUCCESS})
         }
     } catch (error) {
-        console.log(error)
         res.status(STATUS_CODE.INTERNAL_SERVER_ERROR).json({status: false, message: MESSAGE_CONST.INTERNAL_SERVER_ERROR})
     }
 }

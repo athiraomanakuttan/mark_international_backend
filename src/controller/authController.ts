@@ -31,7 +31,6 @@ export class AuthController{
             }
             res.status(STATUS_CODE.UNAUTHORIZED).json({status: false, message: data?.message, data: null});
         } catch (error) {
-            console.log("Error in userLogin:", error);
             res.status(STATUS_CODE.INTERNAL_SERVER_ERROR).json({status: false, message: MESSAGE_CONST.INTERNAL_SERVER_ERROR, data: null});
         }
     

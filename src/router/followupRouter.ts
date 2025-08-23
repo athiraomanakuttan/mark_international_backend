@@ -9,5 +9,6 @@ const followupService = new FollowupService(followupRepository);
 const followupController = new FollowupController(followupService);
 
 router.post('/', (req, res) => followupController.createFollowup(req, res));
+router.get('/', (req, res) => followupController.getAllFollowups(req, res));
 
 export default router;

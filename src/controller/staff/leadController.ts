@@ -25,7 +25,6 @@ export class LeadController {
   async createLead(req: CustomRequestType, res: Response): Promise<void> {
     try {
       const userId = req.user?.id;
-      console.log("user id ", userId);
       if (!userId) {
         res
           .status(STATUS_CODE.BAD_REQUEST)
@@ -39,7 +38,7 @@ export class LeadController {
       if (createData) {
         const leadHistoryData = {
           leadId: createData.id,
-          createdBy: userId,
+          createdBy: new mongoose.Types.ObjectId(userId),
           historyType: 1
         } as ILeadHistory;
         await this._leadHistoryService.createLeadHistory(leadHistoryData);
@@ -52,7 +51,6 @@ export class LeadController {
         .status(STATUS_CODE.INTERNAL_SERVER_ERROR)
         .json({ status: false, message: "unable to create lead", data: null });
     } catch (error) {
-      console.log(error);
       res
         .status(STATUS_CODE.INTERNAL_SERVER_ERROR)
         .json({ status: false, message: "unable to create lead", data: null });

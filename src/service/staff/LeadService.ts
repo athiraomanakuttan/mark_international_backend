@@ -40,9 +40,7 @@ export class LeadService implements ILeadService{
       address: data.address || "",
       leadSource: 2, 
       createdBy: new mongoose.Types.ObjectId(userId),
-    
     }));
-    console.log("transformedData",transformedData)
     return await this.__leadRepository.createBulkLead(transformedData as BulkLeadTransformType[]);
   } catch (error) {
     throw error;

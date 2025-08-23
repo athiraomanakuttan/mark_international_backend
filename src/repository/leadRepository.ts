@@ -391,8 +391,6 @@ async getFullLeadDataById(leadId: string): Promise<any | null> {
         },
       }
     ]);
-    console.log("leadId", leadId)
-    console.log("leadList", leadList)
     return leadList;
   } catch (error) {
     throw error;

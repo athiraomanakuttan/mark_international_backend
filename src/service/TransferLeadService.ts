@@ -23,7 +23,6 @@ export class TransferLeadService implements ITransferLeadService{
     async getTransferList(page: number, limit: number, filter: LeadFilterType, search: string): Promise<any > {
         try {
             const response = await this._transferLeadRepository.getTransferList(page, limit, filter,search)
-            console.log("error in service", response)
             const leads =  TransferLeadsMapper(response.transfers)
             return {leads, totalRecords: response.totalRecords}
         } catch (error) {

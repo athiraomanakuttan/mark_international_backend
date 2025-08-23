@@ -30,14 +30,12 @@ class DashboardLeadRepository implements IDashboardLeadRepository{
     };
 
   } catch (error) {
-    console.log("error in repository ============ >", error)
     throw error;
   }
 }
 
 async getStaffWiseReport(fromDate: Date, toDate: Date, staffId: string): Promise<any> {
   try {
-    console.log("from", fromDate, toDate)
     const data = await LeadModel.aggregate([
       {
         $match: {
@@ -94,7 +92,6 @@ async getStaffWiseReport(fromDate: Date, toDate: Date, staffId: string): Promise
         $sort: { name: 1 } 
       }
     ]);
-console.log("data======================================", data)
     // Calculate totals
     const totals = data.reduce(
       (acc, cur) => {

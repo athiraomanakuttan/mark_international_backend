@@ -34,7 +34,6 @@ class DashboardLeadRepository implements IDashboardLeadRepository{
 
 async getStaffWiseReport(fromDate: Date, toDate: Date): Promise<any> {
   try {
-    console.log("from", fromDate, toDate)
     const data = await LeadModel.aggregate([
       {
         $match: {
@@ -90,7 +89,6 @@ async getStaffWiseReport(fromDate: Date, toDate: Date): Promise<any> {
         $sort: { name: 1 } 
       }
     ]);
-console.log("data======================================", data)
     // Calculate totals
     const totals = data.reduce(
       (acc, cur) => {

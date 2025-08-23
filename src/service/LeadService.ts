@@ -41,7 +41,6 @@ export class LeadService implements ILeadService{
       createdBy: new mongoose.Types.ObjectId(userId),
     
     }));
-    console.log("transformedData",transformedData)
     return await this.__leadRepository.createBulkLead(transformedData as BulkLeadTransformType[]);
   } catch (error) {
     throw error;
@@ -113,9 +112,7 @@ export class LeadService implements ILeadService{
     async getFullLeadDataById(leadId: string): Promise<LeadDto | null> {
         try {
             const response = await this.__leadRepository.getFullLeadDataById(leadId);
-            console.log("response in service", response)
             const lead = leadDtoMapper(response[0]);
-            console.log("lead in service",lead)
             return lead
         } catch (error) {
             throw error;

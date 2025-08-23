@@ -29,10 +29,8 @@ class StaffRepository implements IStaffRepository {
         .limit(limit)
         const DtoData = mapUsersToDto(staffList);
         const totalRecords = await User.find({role,isActive:status}).countDocuments();
-      console.log("DtoData", DtoData)
       return { users: DtoData, totalRecords } as StaffResponse;
     } catch (err) {
-      console.log("error in repo", err)
       throw new Error("Failed to retrieve active staff");
     } 
   }
@@ -40,7 +38,6 @@ class StaffRepository implements IStaffRepository {
   async updateStaff(staffId: string, staffData: StaffUpdateType): Promise<UserData | null> {
     try {
       const updatedStaff = await User.findByIdAndUpdate(staffId, staffData, { new: true });
-      console.log("updatedStaff", updatedStaff)
       if (!updatedStaff) {
         return null;
       }
@@ -53,13 +50,11 @@ class StaffRepository implements IStaffRepository {
   async updateStaffStatus(staffId: string, status: number): Promise<UserData | null> {
     try {
       const updatedStaff = await User.findByIdAndUpdate(staffId, { isActive: status }, { new: true });
-      console.log("updatedStaff", updatedStaff)
       if (!updatedStaff) {
         return null;
       }
       return mapUsersToDto([updatedStaff])[0];
     } catch (err) {
-      console.log("error in updateStaffStatus", err);
       throw new Error("Failed to update staff status");
     }
   }
@@ -70,7 +65,6 @@ class StaffRepository implements IStaffRepository {
         const DtoData = mapUsersToDto(staffList);
       return DtoData
     } catch (err) {
-      console.log("error in repo", err)
       throw new Error("Failed to retrieve active staff");
     } 
   }

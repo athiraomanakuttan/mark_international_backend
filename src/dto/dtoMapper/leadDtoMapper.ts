@@ -3,7 +3,6 @@ import { formatDate } from "../../utils/formatDate";
 import { LeadDto } from "../dtoTypes/leadDto";
 
 export const leadDtoMapper = (lead:LeadType): LeadDto=>{
-    console.log("lead in mapper", lead)
     return {
         id:lead._id,
         name:lead.name,

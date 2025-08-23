@@ -74,7 +74,6 @@ async getLeadByStatus(
         { phoneNumber: { $regex: search, $options: "i" } }
       ];
     }
-    console.log("matched condition", matchConditions)
 
     const leadList = await Lead.aggregate([
       { $match: matchConditions },
@@ -188,7 +187,6 @@ async getLeadforExport(
         { phoneNumber: { $regex: search, $options: "i" } }
       ];
     }
-    console.log("matched condition", matchConditions)
 
     const leadList = await Lead.aggregate([
       { $match: matchConditions },

@@ -14,7 +14,6 @@ export class LeadHistoryController{
     async getAllLeadHistory(req: Request, res: Response): Promise<void> {
         const { page = 1, limit = 10 } = req.query;
         const { leadId } = req.params;
-        console.log("leadId",leadId)
         try {
             const leadHistory = await this.__leadHistoryService.getLeadHistory(leadId, Number(page), Number(limit));
             res.status(STATUS_CODE.OK).json({ status: true, message: MESSAGE_CONST.SUCCESS, data: leadHistory });

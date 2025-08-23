@@ -20,7 +20,6 @@ class StaffController {
         return;
       }
       const createdStaff = await this.__staffService.createStaff(staffData);
-      console.log("Created staff:", createdStaff);
       res
         .status(STATUS_CODE.CREATED)
         .json({
@@ -29,7 +28,6 @@ class StaffController {
           data: createdStaff,
         });
     } catch (err: any) {
-      console.log("error in controller", err);
       if (err.code === 11000 && err.keyPattern?.phoneNumber) {
         res
           .status(STATUS_CODE.INTERNAL_SERVER_ERROR)
@@ -53,7 +51,6 @@ class StaffController {
       );
       res.status(STATUS_CODE.OK).json({ status: true, data: staffList });
     } catch (error) {
-      console.log("error in controller", error);
       res
         .status(STATUS_CODE.INTERNAL_SERVER_ERROR)
         .json({ status: false, message: "Failed to retrieve staff" });
@@ -64,7 +61,6 @@ class StaffController {
     try {
       const staffId = req.params.id;
       const staffData: StaffUpdateType = req.body;
-      console.log("staffData", staffData);
       if (!staffId || !staffData) {
         res
           .status(STATUS_CODE.BAD_REQUEST)
@@ -83,7 +79,6 @@ class StaffController {
           data: updatedStaff,
         });
     } catch (error) {
-      console.log("error in controller", error);
       res
         .status(STATUS_CODE.INTERNAL_SERVER_ERROR)
         .json({ status: false, message: "Failed to update staff" });
@@ -94,7 +89,6 @@ class StaffController {
     try {
       const staffId = req.params.id;
       const status = Number(req.params.status);
-      console.log("staffId", staffId, "status", status);
       if (!staffId) {
         res.status(STATUS_CODE.BAD_REQUEST).json({ error: "Invalid staff ID" });
         return;
@@ -117,7 +111,6 @@ class StaffController {
           data: updatedStaff,
         });
     } catch (error) {
-      console.log("error in controller", error);
       res
         .status(STATUS_CODE.INTERNAL_SERVER_ERROR)
         .json({ status: false, message: "Failed to update staff status" });

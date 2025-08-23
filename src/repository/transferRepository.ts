@@ -94,7 +94,6 @@ export class TransferRepository implements ITransferRepository{
     ]);
 
     const totalRecords = await TransferModel.countDocuments(matchConditions);
-    console.log("transferList", transferList)
     return { transfers: transferList as TransferFetchType[], totalRecords };
   } catch (error) {
     throw error;
