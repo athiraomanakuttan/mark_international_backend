@@ -6,6 +6,7 @@ const followupSchema = new Schema<FollowUpType>({
     leadId: { type: String, required: true },
     followup_date: { type: String, required: true },
     isDeleted: { type: Boolean, default: false },
+    isAdminDeleted: { type: Boolean, default: false },
     remarks: { type: String, required: false }
 });
 

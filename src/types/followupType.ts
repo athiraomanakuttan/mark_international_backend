@@ -5,7 +5,8 @@ import { LeadBasicType } from "./leadTypes";
 export interface FollowUpType{
   leadId ?: string;
   followup_date: string
-  isDeleted ?: boolean
+  isDeleted ?: boolean,
+  isAdminDeleted?:boolean,
   assignedAgentId ?: string
   remarks?: string
 }

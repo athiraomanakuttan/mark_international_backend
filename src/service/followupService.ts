@@ -18,4 +18,7 @@ export class FollowupService implements IFollowupService {
         const data = await this.__followupRepository.getAllFollowups(userId);
         return followupDtoMapper(data);
     }
+    async updateFollowup(followupIds: string[], updateData: Partial<FollowUpType>): Promise<void> {
+        await this.__followupRepository.updateFollowup(followupIds, updateData);
+    }
 }

@@ -8,6 +8,7 @@ export const followupDtoMapper = (data: FollowupResponseType[]): FollowupDto[] =
     const lead = item.lead ?? [];
 
     return {
+      id: item._id,
       name: lead[0]?.name || "",
       phoneNumber: assignedAgent[0]?.phoneNumber || "",
       createdDate: formatDate(lead[0]?.createdAt!) || "",

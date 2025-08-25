@@ -20,7 +20,7 @@ const leadController = new LeadController(leadService, leadHistoryService)
 const router = Router()
 
 
-router.use(authenticationMiddleware as unknown as (req: Request, res: Response, next: NextFunction) => void);
+router.use(authenticationMiddleware  as unknown as (req: Request, res: Response, next: NextFunction) => void);
 
 router.post('/',(req,res)=>leadController.createLead(req,res))
 router.get('/', (req:Request, res:Response)=> leadController.getLead(req,res))

@@ -28,6 +28,19 @@ export class FollowupController {
       }
     }
 
+    async updateFollowup(req: CustomRequestType, res: Response): Promise<void> {
+      try {
+        const { followupIds }: { followupIds: string[] } = req.body;
+        const role = req.user?.role
+        const id = req.user?.id
+        console.log("role", role, id)
+        const response= await this.__followupService.updateFollowup(followupIds, role === 'admin' ? {isAdminDeleted: true} : {isDeleted: true});
+        res.status(STATUS_CODE.OK).json({status: true, message:MESSAGE_CONST.SUCCESS, data: response });
+      } catch (error) {
+        res.status(STATUS_CODE.INTERNAL_SERVER_ERROR).json({status: false, message:MESSAGE_CONST.INTERNAL_SERVER_ERROR });
+      }
+    }
+
   }
 
 
