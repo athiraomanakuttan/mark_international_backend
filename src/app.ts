@@ -18,6 +18,7 @@ import staffLeadRouter from './router/staff/leadRouter'
 
 import leadHistoryRouter from './router/leadHistoryRouter'
 import followupRouter from './router/followupRouter';
+import eventRouter from './router/eventRouter';
 
 const app = express();
 
@@ -57,4 +58,7 @@ app.use('/api/staff/dashboard', staffDashboardRouter)
 app.use('/api/staff/leads', staffLeadRouter);
 app.use('/api/lead-history', leadHistoryRouter)
 app.use('/api/followup', followupRouter)
+
+app.use('/api/events',eventRouter)
+app.use('/api/students', eventRouter)
 export default app;
