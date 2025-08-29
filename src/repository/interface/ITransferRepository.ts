@@ -1,5 +1,4 @@
-import { TransferDtoType } from "../../dto/dtoMapper/transferDtoMapper";
-import { ILeadTransfer } from "../../model/leadTransfer";
+
 import { LeadTransferType, TransferResponseType } from "../../types/lead-transfer-type";
 import { LeadFilterType } from "../../types/leadTypes";
 
