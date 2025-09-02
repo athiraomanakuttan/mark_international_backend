@@ -124,8 +124,14 @@ async transferLead(staffId: string, leadData: string[]): Promise<any> {
 
 async deleteMultipleLeads(status: number, leadData: string[]): Promise<any> {
   try {
-    const response = await Lead.updateMany({_id:{$in:leadData}},{$set:{status} })
+    if(status===0){
+      const response = await Lead.updateMany({_id:{$in:leadData}},{$set:{status} })
     return response
+    }else if( status === -1){
+      const response = await Lead.deleteMany({_id:{$in:leadData}})
+      return response
+    }
+    
   } catch (error) {
     throw error
   }
