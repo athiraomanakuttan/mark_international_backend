@@ -29,4 +29,7 @@ router.patch('/delete',(req:Request, res:Response)=> leadController.deleteMultip
 router.patch('/:id',(req:Request, res:Response)=> leadController.updateLead(req,res))
 
 router.get('/export-lead',(req:Request, res:Response)=>leadController.getExportLead(req,res))
+router.post('/upload',(req:Request, res:Response)=>leadController.createBulkLead(req,res))
+
+
 export default router

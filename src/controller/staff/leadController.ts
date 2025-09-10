@@ -187,5 +187,42 @@ export class LeadController {
     }
   }
 
+   async createBulkLead(req:CustomRequestType, res:Response):Promise<void>{
+      try {
+          const userId = req.user?.id
+          if(!userId){
+          res.status(STATUS_CODE.UNAUTHORIZED).json({status: false, message:MESSAGE_CONST.UNAUTHORIZED})
+              return
+          }
+          const leadData = req.body
+          const response = await this.__leadService.createBulkLead(userId, leadData as BulkLeadType[])
+          if(response){
+              if(Array.isArray(response) && response.length > 0){
+                  response.forEach(async (rowData)=>{
+                      const createdLead = {
+                          leadId: rowData.id,
+                          createdBy: new mongoose.Types.ObjectId(userId),
+                          historyType: 1
+                      } as ILeadHistory
+                      await this._leadHistoryService.createLeadHistory(createdLead)
+                      if(rowData.assignedAgent) {
+                          const data = {
+                              leadId: rowData.id,
+                              historyType: 4,
+                              to: rowData.assignedAgent,
+                              from:new mongoose.Types.ObjectId(userId),
+                          } as ILeadHistory
+                          await this._leadHistoryService.createLeadHistory(data)
+                      }
+                  })
+                 
+              }
+              res.status(STATUS_CODE.OK).json({status: true, message:"file upload successfull"})
+          }
+      } catch (error) {
+          res.status(STATUS_CODE.INTERNAL_SERVER_ERROR).json({status: false, message:MESSAGE_CONST.INTERNAL_SERVER_ERROR})
+      }
+  }
+
   
 }

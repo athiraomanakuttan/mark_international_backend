@@ -35,7 +35,7 @@ export class LeadService implements ILeadService{
     const transformedData   = leadData.map((data) => ({
       name: data.name,
       phoneNumber: data.phoneNumber,
-      assignedAgent: data.staff ? new mongoose.Types.ObjectId(data.staff) : undefined,
+      assignedAgent:  new mongoose.Types.ObjectId(userId) || undefined,
       priority: data.priority ? Number(data.priority) : 2, // default to Normal
       address: data.address || "",
       leadSource: 2, 
