@@ -14,5 +14,16 @@ export class AuthRepository implements IAuthRepository {
         }
     }
 
+    async updatePassword(password: string, userId: string): Promise<IUser | null> {
+        try {
+            const data = await UserModel.findOneAndUpdate({_id: userId},{$set:{password}},{new: true})
+             return data ? data.toObject() as IUser : null;
+        } catch (error) {
+                        throw new Error(`Error updating admin by Id: ${error instanceof Error ? error.message : 'Unknown error'}`);
+
+        }
+    }
+
+
    
 }

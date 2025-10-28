@@ -5,7 +5,6 @@ import { Request,Response } from "express";
 import { CustomRequestType } from "../types/requestType";
 import { BulkLeadType, LeadBasicType, LeadFilterType, LeadType } from "../types/leadTypes";
 import { ITransferLeadService } from "../service/interface/ITransferLeadService";
-import { ILeadTransfer } from "../model/leadTransfer";
 import { LeadDto } from "../dto/dtoTypes/leadDto";
 import { LeadTransferType } from "../types/lead-transfer-type";
 import { LEAD_PRIORITIES, LEAD_STATUS } from "../data/lead-data";

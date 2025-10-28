@@ -1,11 +1,13 @@
 import { UserAuthType } from "../../types/authTypes";
-import { Request, Response, NextFunction } from "express";
+import { RequestHandler } from "express";
 import { CustomRequestType } from "../../types/requestType";
-export const adminAuthentication = (req: CustomRequestType, res: Response, next: NextFunction) => {
+
+export const adminAuthentication: RequestHandler = (req, res, next) => {
     try {
-        const user = req.user as UserAuthType;
+        const customReq = req as CustomRequestType;
+        const user = customReq.user as UserAuthType;
         if (user && user.role === 'admin') {
-            next()
+            next();
         } else {
             res.status(403).json({ message: 'Forbidden: Admin access required' });
         }
@@ -13,4 +15,4 @@ export const adminAuthentication = (req: CustomRequestType, res: Response, next:
         console.error("Admin authentication error:", error);
         res.status(500).json({ message: 'Internal server error' });
     }
-} 
+};

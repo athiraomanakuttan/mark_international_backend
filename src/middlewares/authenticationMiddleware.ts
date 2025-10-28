@@ -1,39 +1,41 @@
-import { Request, Response, NextFunction } from "express";
-import jwt from "jsonwebtoken"; // Note: use lowercase `jwt`
+import { Request, Response, NextFunction, RequestHandler } from "express";
+import jwt from "jsonwebtoken";
 import { UserAuthType } from "../types/authTypes";
+import { CustomRequestType } from "../types/requestType";
 
-// Extend Request type to include `user` property
-interface AuthenticatedRequest extends Request {
-    user?: UserAuthType; // You can replace `any` with a more specific type if needed
-}
-
-const authenticationMiddleware = (
-    req: AuthenticatedRequest,
+// Use Express' RequestHandler so this middleware is compatible with Router.use
+const authenticationMiddleware: RequestHandler = (
+    req: Request,
     res: Response,
     next: NextFunction
 ) => {
     try {
         const token = req.headers.authorization?.split(" ")[1];
         if (!token) {
-            return res.status(401).json({ message: "Unauthorized" });
+            res.status(401).json({ message: "Unauthorized" });
+            return;
         }
 
         const decoded = jwt.verify(token, process.env.JWT_TOKEN_SECRET as string);
         if (typeof decoded === "string") {
             console.error("Decoded token is a string, expected an object");
-            return res.status(401).json({ message: "Invalid token payload" });
+            res.status(401).json({ message: "Invalid token payload" });
+            return;
         }
-        //checking token is expires or not
+        // checking token expiration
         if (decoded.exp && decoded.exp < Date.now() / 1000) {
             console.error("Token has expired");
-            return res.status(401).json({ message: "Token expired" });
+            res.status(401).json({ message: "Token expired" });
+            return;
         }
-        req.user = decoded as UserAuthType;
-        
+
+        // attach user to request using project CustomRequestType
+        (req as CustomRequestType).user = decoded as UserAuthType;
         next();
     } catch (error) {
         console.error("Authentication error:", error);
-        return res.status(401).json({ message: "Unauthorized" });
+        res.status(401).json({ message: "Unauthorized" });
+        return;
     }
 };
 
