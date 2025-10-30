@@ -16,3 +16,13 @@ export interface IUser {
     updatedAt?: Date;
     isActive?:  number; // 1 for active, 0 for inactive, -1 for deleted
 }
+
+export interface IBranch {
+    _id?: mongoose.Types.ObjectId;
+    branchName: string;
+    location: string;
+    description: string;
+    createdAt?: Date;
+    updatedAt?: Date;
+    isActive?: number; // 1 for active, 0 for inactive, -1 for deleted
+}
