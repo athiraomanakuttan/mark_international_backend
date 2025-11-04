@@ -14,20 +14,40 @@ export class RegistrationController {
   async createRegistration(req: Request, res: Response): Promise<void> {
     try {
       // Extract form data from request body
+      // Support two shapes for address:
+      // 1) separate fields: street, city, state, pincode, country
+      // 2) single JSON string field: address = '{"street":"...","city":"..."}'
+      let parsedAddress: any = {};
+      if (req.body && req.body.address) {
+        const addrField = req.body.address;
+        if (typeof addrField === 'string') {
+          try {
+            parsedAddress = JSON.parse(addrField);
+          } catch (err) {
+            // ignore parse errors and leave parsedAddress empty
+            parsedAddress = {};
+          }
+        } else if (typeof addrField === 'object') {
+          parsedAddress = addrField;
+        }
+      }
+
       const registrationData: CreateRegistrationDto = {
         name: req.body.name,
         dateOfBirth: req.body.dateOfBirth,
         contactNumber: req.body.contactNumber,
         maritalStatus: req.body.maritalStatus,
-        street: req.body.street,
-        city: req.body.city,
-        state: req.body.state,
-        pincode: req.body.pincode,
-        country: req.body.country
+        street: parsedAddress.street || req.body.street,
+        city: parsedAddress.city || req.body.city,
+        state: parsedAddress.state || req.body.state,
+        pincode: parsedAddress.pincode ? String(parsedAddress.pincode) : req.body.pincode,
+        country: parsedAddress.country || req.body.country
       };
 
-      // Extract uploaded files
-      const files = req.files as Express.Multer.File[];
+      // Extract uploaded files and keep only those that belong to documents
+      // (this accepts nested field names from the client like "documents[0][file]")
+      const allFiles = req.files as Express.Multer.File[] | undefined;
+      const files = (allFiles || []).filter(f => typeof f.fieldname === 'string' && f.fieldname.includes('documents'));
 
       // Validate that files are provided
       if (!files || files.length === 0) {

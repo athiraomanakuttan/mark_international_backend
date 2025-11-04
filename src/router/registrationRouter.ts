@@ -13,7 +13,8 @@ const registrationController = new RegistrationController(registrationService);
 
 // Routes
 router.post('/registration', 
-  uploadMultiple.array('documents'), 
+  // accept any file fields (we'll filter by fieldname in the controller)
+  uploadMultiple.any(), 
   (req, res) => registrationController.createRegistration(req, res)
 );
 
