@@ -12,6 +12,7 @@ export interface IUser {
     profilePic?: File | null;
     openingBalance?: number;
     role: "admin" | "staff";
+    joiningDate?: Date;
     createdAt?: Date;
     updatedAt?: Date;
     isActive?:  number; // 1 for active, 0 for inactive, -1 for deleted
