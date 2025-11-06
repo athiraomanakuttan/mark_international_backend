@@ -21,12 +21,20 @@ export class EmployeeRepository implements IEmployeeRepository {
       let query: any = {};
 
       // Apply filters
-      if (filterData.status && filterData.status.length > 0) {
-        query.status = { $in: filterData.status };
+      if (filterData.status !== undefined && filterData.status !== null) {
+        if (Array.isArray(filterData.status) && filterData.status.length > 0) {
+          query.status = { $in: filterData.status };
+        } else if (typeof filterData.status === 'number') {
+          query.status = filterData.status;
+        }
       }
 
-      if (filterData.designation && filterData.designation.length > 0) {
-        query.designation = { $in: filterData.designation.map(id => new mongoose.Types.ObjectId(id)) };
+      if (filterData.designation) {
+        if (Array.isArray(filterData.designation) && filterData.designation.length > 0) {
+          query.designation = { $in: filterData.designation.map(id => new mongoose.Types.ObjectId(id)) };
+        } else if (typeof filterData.designation === 'string') {
+          query.designation = new mongoose.Types.ObjectId(filterData.designation);
+        }
       }
 
       if (filterData.fromDate || filterData.toDate) {
@@ -39,8 +47,12 @@ export class EmployeeRepository implements IEmployeeRepository {
         }
       }
 
-      if (filterData.createdBy && filterData.createdBy.length > 0) {
-        query.createdBy = { $in: filterData.createdBy.map(id => new mongoose.Types.ObjectId(id)) };
+      if (filterData.createdBy) {
+        if (Array.isArray(filterData.createdBy) && filterData.createdBy.length > 0) {
+          query.createdBy = { $in: filterData.createdBy.map(id => new mongoose.Types.ObjectId(id)) };
+        } else if (typeof filterData.createdBy === 'string') {
+          query.createdBy = new mongoose.Types.ObjectId(filterData.createdBy);
+        }
       }
 
       // Apply search
@@ -51,6 +63,8 @@ export class EmployeeRepository implements IEmployeeRepository {
           { phoneNumber: { $regex: search, $options: 'i' } }
         ];
       }
+
+      console.log('🔍 MongoDB Query:', JSON.stringify(query, null, 2));
 
       const employees = await Employee.aggregate([
         { $match: query },

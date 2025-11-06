@@ -47,11 +47,11 @@ export interface UpdateEmployeeType {
 }
 
 export interface EmployeeFilterType {
-  status?: number[];
-  designation?: string[];
+  status?: number[] | number;
+  designation?: string[] | string;
   fromDate?: Date;
   toDate?: Date;
-  createdBy?: string[];
+  createdBy?: string[] | string;
 }
 
 export interface EmployeeResponseType {

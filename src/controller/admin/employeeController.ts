@@ -123,6 +123,8 @@ export class EmployeeController {
       };
 
       const filterData = JSON.parse(filter) as EmployeeFilterType;
+      console.log("Filter string:", filterData);
+
       const response = await this.__employeeService.getEmployees(
         Number(page),
         Number(limit),
@@ -136,6 +138,7 @@ export class EmployeeController {
         data: response
       });
     } catch (error) {
+      console.error('Error fetching employees:', error);
       res.status(STATUS_CODE.INTERNAL_SERVER_ERROR).json({
         status: false,
         message: MESSAGE_CONST.INTERNAL_SERVER_ERROR
