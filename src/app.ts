@@ -14,6 +14,7 @@ import adminDashboardRouter from './router/admin/dashboardRouter'
 import profileRouter from './router/admin/profileRouter'
 import branchRouter from './router/admin/branchRouter'
 import designationRouter from './router/admin/designationRouter'
+import { employeeRouter } from './router/admin/employeeRouter'
 
 // staff
 import staffDashboardRouter from './router/staff/dashboardRouter'
@@ -61,6 +62,7 @@ app.use('/api/admin/dashboard', adminDashboardRouter);
 app.use('/api/admin/profile',profileRouter)
 app.use('/api/admin/branches', branchRouter)
 app.use('/api/admin/designations', designationRouter)
+app.use('/api/admin/employees', employeeRouter)
 
 app.use('/api/staff/dashboard', staffDashboardRouter)
 app.use('/api/staff/leads', staffLeadRouter);
