@@ -1,7 +1,7 @@
 import { Router } from "express";
 import { EmployeeController } from "../../controller/admin/employeeController";
 import authenticationMiddleware from "../../middlewares/authenticationMiddleware";
-import { uploadEmployeeFiles } from "../../middlewares/admin/employeeMulter";
+import { uploadEmployeeFiles } from "../../middlewares/cloudinaryMulter";
 import { EmployeeService } from "../../service/employeeService";
 import { EmployeeRepository } from "../../repository/employeeRepository";
 
@@ -14,7 +14,7 @@ const employeeController = new EmployeeController(employeeService);
 employeeRouter.post(
   "/",
   authenticationMiddleware,
-  uploadEmployeeFiles,
+  ...uploadEmployeeFiles,
   employeeController.createEmployee.bind(employeeController)
 );
 
@@ -36,7 +36,7 @@ employeeRouter.get(
 employeeRouter.put(
   "/:id",
   authenticationMiddleware,
-  uploadEmployeeFiles,
+  ...uploadEmployeeFiles,
   employeeController.updateEmployee.bind(employeeController)
 );
 

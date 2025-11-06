@@ -2,7 +2,7 @@ import Router from 'express';
 import { LeaveRepository } from '../repository/leaveRepository';
 import { LeaveService } from '../service/leaveService';
 import { LeaveController } from '../controller/leaveController';
-import { upload } from '../middlewares/multer';
+import { uploadMultipleFiles } from '../middlewares/cloudinaryMulter';
 
 const router = Router();
 
@@ -12,7 +12,7 @@ const leaveController = new LeaveController(leaveService);
 
 
 router.post('/leave', 
-  upload.any(), 
+  ...uploadMultipleFiles, 
   (req, res) => leaveController.createLeave(req, res)
 );
 

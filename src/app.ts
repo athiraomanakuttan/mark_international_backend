@@ -25,6 +25,7 @@ import followupRouter from './router/followupRouter';
 import eventRouter from './router/eventRouter';
 import registrationRouter from './router/registrationRouter';
 import leaveRouter from './router/leaveRouter';
+import { uploadRouter } from './router/uploadRouter';
 
 const app = express();
 
@@ -49,9 +50,9 @@ app.use(cors({
   credentials: true,
 }));
 
-// ✅ Body parser and static files
+// ✅ Body parser
 app.use(express.json());
-app.use('/uploads', express.static('uploads'));
+// Note: No longer serving static files from uploads folder - using Cloudinary instead
 
 // ✅ API routes
 app.use('/api/auth', authRouter);
@@ -73,4 +74,5 @@ app.use('/api/events',eventRouter)
 app.use('/api/students', eventRouter)
 app.use('/api', registrationRouter)
 app.use('/api', leaveRouter)
+app.use('/api/upload', uploadRouter)
 export default app;

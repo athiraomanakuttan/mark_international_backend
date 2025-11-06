@@ -1,0 +1,633 @@
+# Mark International Backend Guidelines (.copilot)
+
+## 🏗️ Backend Architecture (Node.js + TypeScript + Express + MongoDB)
+
+### 📁 Folder Structure
+```
+Backend/src/
+├── app.ts                    # Express app configuration & middleware setup
+├── server.ts                 # Server entry point
+├── config/                   # Configuration files (DB, Cloudinary, etc.)
+├── constant/                 # Application constants & enums
+├── controller/               # Request handlers & business logic coordination
+├── dto/                      # Data Transfer Objects
+│   ├── dtoTypes/            # Interface definitions for DTOs
+│   └── dtoMapper/           # Data transformation utilities
+├── middlewares/             # Express middlewares (auth, multer, etc.)
+├── model/                   # MongoDB/Mongoose schemas
+├── repository/              # Data access layer
+│   └── interface/           # Repository interfaces
+├── router/                  # Express route definitions
+├── service/                 # Business logic layer
+│   └── interface/           # Service interfaces
+├── types/                   # TypeScript type definitions
+└── utils/                   # Utility functions
+```
+
+## 🎯 Architecture Patterns
+
+### 1. **Layered Architecture (MANDATORY)**
+Every feature MUST follow this exact layer structure:
+
+- **Controller Layer**: Handles HTTP requests/responses, validation
+- **Service Layer**: Contains business logic, orchestrates repositories
+- **Repository Layer**: Data access and database operations
+- **Model Layer**: Database schemas and entity definitions
+
+### 2. **Dependency Injection Pattern (MANDATORY)**
+Controllers depend on service interfaces, services depend on repository interfaces:
+
+```typescript
+// Example: EmployeeController
+export class EmployeeController {
+    constructor(
+        private __employeeService: IEmployeeService,
+        private _designationService: IDesignationService
+    ) {}
+    
+    async createEmployee(req: Request, res: Response) {
+        try {
+            const employeeData = req.body as EmployeeBasicType;
+            const result = await this.__employeeService.createEmployee(employeeData);
+            return res.status(201).json(result);
+        } catch (error: any) {
+            return res.status(500).json({ 
+                success: false, 
+                message: error.message || 'Internal server error' 
+            });
+        }
+    }
+}
+```
+
+### 3. **DTO Pattern (MANDATORY)**
+Transform internal models to external representations:
+```typescript
+// Internal Model -> DTO -> API Response
+EmployeeType -> EmployeeDto -> JSON Response
+```
+
+## 📋 Where to Write Backend Code
+
+### **Interfaces**
+- **Location**: `src/repository/interface/` and `src/service/interface/`
+- **Purpose**: Define contracts for services and repositories
+- **Example**: `IEmployeeService.ts`, `IEmployeeRepository.ts`
+- **Pattern**: Use `I` prefix for interfaces
+
+```typescript
+// src/service/interface/IEmployeeService.ts
+export interface IEmployeeService {
+    createEmployee(employee: EmployeeBasicType): Promise<BasicResponse<EmployeeDto>>;
+    getEmployees(page: number, limit: number): Promise<BasicResponse<EmployeeDto[]>>;
+    getEmployeeById(id: string): Promise<BasicResponse<EmployeeDto>>;
+    updateEmployee(id: string, employee: UpdateEmployeeType): Promise<BasicResponse<EmployeeDto>>;
+    deleteEmployee(id: string): Promise<BasicResponse<null>>;
+}
+```
+
+### **DTO Types**
+- **Location**: `src/dto/dtoTypes/`
+- **Purpose**: Define data structures for API responses
+- **Example**: `employeeDto.ts`, `designationDto.ts`
+- **Naming**: Use `*Dto.ts` suffix
+
+```typescript
+// src/dto/dtoTypes/employeeDto.ts
+export interface EmployeeDto {
+    _id: string;
+    name: string;
+    email: string;
+    phone: string;
+    designation: {
+        id: string;
+        name: string;
+    };
+    isActive: boolean;
+    createdAt: string;
+    updatedAt: string;
+}
+```
+
+### **DTO Mappers**
+- **Location**: `src/dto/dtoMapper/`
+- **Purpose**: Transform internal models to DTOs
+- **Example**: `employeeDtoMapper.ts`, `designationDtoMapper.ts`
+- **Pattern**: Export both single item and array mappers
+
+```typescript
+// src/dto/dtoMapper/employeeDtoMapper.ts
+export const employeeDtoMapper = (employee: EmployeeType): EmployeeDto => {
+    return {
+        _id: employee._id?.toString() || '',
+        name: employee.name,
+        email: employee.email,
+        phone: employee.phone,
+        designation: {
+            id: employee.designation._id?.toString() || '',
+            name: employee.designation.name
+        },
+        isActive: employee.isActive,
+        createdAt: employee.createdAt?.toISOString() || '',
+        updatedAt: employee.updatedAt?.toISOString() || ''
+    };
+};
+
+export const employeesMapper = (employees: EmployeeType[]): EmployeeDto[] => 
+    employees.map(employeeDtoMapper);
+```
+
+### **Types**
+- **Location**: `src/types/`
+- **Purpose**: Internal type definitions, request/response types
+- **Example**: `employeeTypes.ts`, `authTypes.ts`
+- **Pattern**: Use `Type` suffix for internal types
+
+```typescript
+// src/types/employeeTypes.ts
+export interface EmployeeBasicType {
+    name: string;
+    email: string;
+    phone: string;
+    designation: string; // ObjectId as string
+    isActive: boolean;
+}
+
+export interface EmployeeType extends EmployeeBasicType {
+    _id?: ObjectId;
+    designation: DesignationType; // Populated designation
+    createdAt?: Date;
+    updatedAt?: Date;
+}
+
+export interface UpdateEmployeeType extends Partial<EmployeeBasicType> {}
+```
+
+### **Models**
+- **Location**: `src/model/`
+- **Purpose**: MongoDB/Mongoose schemas
+- **Pattern**: Define schema with proper validation and relationships
+
+```typescript
+// src/model/employeeModel.ts
+import mongoose, { Schema } from 'mongoose';
+import { EmployeeType } from '../types/employeeTypes';
+
+const employeeSchema: Schema<EmployeeType> = new Schema({
+    name: { type: String, required: true, trim: true },
+    email: { type: String, required: true, unique: true, trim: true, lowercase: true },
+    phone: { type: String, required: true, trim: true },
+    designation: { type: Schema.Types.ObjectId, ref: 'Designation', required: true },
+    isActive: { type: Boolean, default: true }
+}, {
+    timestamps: true,
+    versionKey: false
+});
+
+// Indexes for performance
+employeeSchema.index({ email: 1 });
+employeeSchema.index({ designation: 1 });
+employeeSchema.index({ isActive: 1 });
+
+export const EmployeeModel = mongoose.model<EmployeeType>('Employee', employeeSchema);
+```
+
+### **Controllers**
+- **Location**: `src/controller/` (with admin/ and staff/ subfolders)
+- **Purpose**: Handle HTTP requests, call services, return responses
+- **Pattern**: Always use dependency injection, handle errors properly
+
+```typescript
+// src/controller/employeeController.ts
+export class EmployeeController {
+    constructor(
+        private __employeeService: IEmployeeService
+    ) {}
+
+    async createEmployee(req: Request, res: Response) {
+        try {
+            const employeeData = req.body as EmployeeBasicType;
+            
+            // Validation can be added here
+            if (!employeeData.name || !employeeData.email) {
+                return res.status(400).json({
+                    success: false,
+                    message: 'Name and email are required'
+                });
+            }
+
+            const result = await this.__employeeService.createEmployee(employeeData);
+            return res.status(201).json(result);
+        } catch (error: any) {
+            console.error('Error creating employee:', error);
+            return res.status(500).json({
+                success: false,
+                message: error.message || 'Internal server error'
+            });
+        }
+    }
+
+    async getEmployees(req: Request, res: Response) {
+        try {
+            const page = parseInt(req.query.page as string) || 1;
+            const limit = parseInt(req.query.limit as string) || 10;
+            
+            const result = await this.__employeeService.getEmployees(page, limit);
+            return res.status(200).json(result);
+        } catch (error: any) {
+            console.error('Error fetching employees:', error);
+            return res.status(500).json({
+                success: false,
+                message: error.message || 'Internal server error'
+            });
+        }
+    }
+}
+```
+
+### **Services**
+- **Location**: `src/service/` (with admin/ and staff/ subfolders)
+- **Purpose**: Business logic, orchestrate repositories
+- **Pattern**: Implement service interfaces, use DTO mappers
+
+```typescript
+// src/service/employeeService.ts
+export class EmployeeService implements IEmployeeService {
+    constructor(
+        private __employeeRepository: IEmployeeRepository,
+        private __designationRepository: IDesignationRepository
+    ) {}
+
+    async createEmployee(employee: EmployeeBasicType): Promise<BasicResponse<EmployeeDto>> {
+        try {
+            // Business logic validation
+            const designationExists = await this.__designationRepository.getDesignationById(employee.designation);
+            if (!designationExists) {
+                throw new Error('Designation not found');
+            }
+
+            const emailExists = await this.__employeeRepository.getEmployeeByEmail(employee.email);
+            if (emailExists) {
+                throw new Error('Email already exists');
+            }
+
+            const createdEmployee = await this.__employeeRepository.createEmployee(employee);
+            const employeeDto = employeeDtoMapper(createdEmployee);
+
+            return {
+                success: true,
+                message: 'Employee created successfully',
+                data: employeeDto
+            };
+        } catch (error: any) {
+            throw new Error(error.message || 'Failed to create employee');
+        }
+    }
+
+    async getEmployees(page: number, limit: number): Promise<BasicResponse<EmployeeDto[]>> {
+        try {
+            const employees = await this.__employeeRepository.getEmployees(page, limit);
+            const employeeDtos = employeesMapper(employees);
+
+            return {
+                success: true,
+                message: 'Employees retrieved successfully',
+                data: employeeDtos
+            };
+        } catch (error: any) {
+            throw new Error(error.message || 'Failed to retrieve employees');
+        }
+    }
+}
+```
+
+### **Repositories**
+- **Location**: `src/repository/` (with admin/ and staff/ subfolders)
+- **Purpose**: Database operations, data access
+- **Pattern**: Implement repository interfaces, return raw models
+
+```typescript
+// src/repository/employeeRepository.ts
+export class EmployeeRepository implements IEmployeeRepository {
+    async createEmployee(employee: EmployeeBasicType): Promise<EmployeeType> {
+        const newEmployee = new EmployeeModel(employee);
+        const savedEmployee = await newEmployee.save();
+        return await this.getEmployeeById(savedEmployee._id!.toString());
+    }
+
+    async getEmployees(page: number, limit: number): Promise<EmployeeType[]> {
+        const skip = (page - 1) * limit;
+        return await EmployeeModel
+            .find({ isActive: true })
+            .populate('designation')
+            .skip(skip)
+            .limit(limit)
+            .sort({ createdAt: -1 })
+            .lean()
+            .exec();
+    }
+
+    async getEmployeeById(id: string): Promise<EmployeeType> {
+        const employee = await EmployeeModel
+            .findById(id)
+            .populate('designation')
+            .lean()
+            .exec();
+        
+        if (!employee) {
+            throw new Error('Employee not found');
+        }
+        
+        return employee;
+    }
+
+    async getEmployeeByEmail(email: string): Promise<EmployeeType | null> {
+        return await EmployeeModel
+            .findOne({ email, isActive: true })
+            .populate('designation')
+            .lean()
+            .exec();
+    }
+
+    async updateEmployee(id: string, employee: UpdateEmployeeType): Promise<EmployeeType> {
+        const updatedEmployee = await EmployeeModel
+            .findByIdAndUpdate(id, employee, { new: true })
+            .populate('designation')
+            .lean()
+            .exec();
+        
+        if (!updatedEmployee) {
+            throw new Error('Employee not found');
+        }
+        
+        return updatedEmployee;
+    }
+
+    async deleteEmployee(id: string): Promise<void> {
+        const result = await EmployeeModel.findByIdAndUpdate(
+            id, 
+            { isActive: false }, 
+            { new: true }
+        );
+        
+        if (!result) {
+            throw new Error('Employee not found');
+        }
+    }
+}
+```
+
+### **Routers**
+- **Location**: `src/router/` (with admin/ and staff/ subfolders)
+- **Purpose**: Express route definitions
+- **Pattern**: Use controller methods, apply middleware
+
+```typescript
+// src/router/employeeRouter.ts
+import { Router } from 'express';
+import { EmployeeController } from '../controller/employeeController';
+import { authenticationMiddleware } from '../middlewares/authenticationMiddleware';
+
+const router = Router();
+
+// Dependency injection
+const employeeService = new EmployeeService(employeeRepository, designationRepository);
+const employeeController = new EmployeeController(employeeService);
+
+// Routes with authentication
+router.post('/', authenticationMiddleware, employeeController.createEmployee.bind(employeeController));
+router.get('/', authenticationMiddleware, employeeController.getEmployees.bind(employeeController));
+router.get('/:id', authenticationMiddleware, employeeController.getEmployeeById.bind(employeeController));
+router.put('/:id', authenticationMiddleware, employeeController.updateEmployee.bind(employeeController));
+router.delete('/:id', authenticationMiddleware, employeeController.deleteEmployee.bind(employeeController));
+
+export { router as employeeRouter };
+```
+
+## 🔒 Authentication & Authorization
+- **JWT-based authentication** with access/refresh tokens
+- **Middleware**: `authenticationMiddleware.ts`
+- **User roles**: Admin, Staff (implement role-based access control)
+- **Token handling**: Automatic refresh via frontend interceptors
+
+## 🗄️ Database Best Practices
+
+### **MongoDB Indexes**
+```typescript
+// Always add indexes for:
+// - Unique fields (email, username)
+// - Foreign key references (designation, user)
+// - Query filter fields (isActive, status)
+// - Search fields (name, email)
+
+employeeSchema.index({ email: 1 });
+employeeSchema.index({ designation: 1 });
+employeeSchema.index({ isActive: 1 });
+```
+
+### **Schema Validation**
+```typescript
+// Always include proper validation
+const employeeSchema = new Schema({
+    name: { 
+        type: String, 
+        required: [true, 'Name is required'], 
+        trim: true,
+        minlength: [2, 'Name must be at least 2 characters'],
+        maxlength: [100, 'Name cannot exceed 100 characters']
+    },
+    email: { 
+        type: String, 
+        required: [true, 'Email is required'], 
+        unique: true, 
+        trim: true, 
+        lowercase: true,
+        match: [/^\w+([.-]?\w+)*@\w+([.-]?\w+)*(\.\w{2,3})+$/, 'Please enter a valid email']
+    }
+});
+```
+
+## 🚀 Backend Development Checklist
+
+### Adding a New Entity Backend:
+- [ ] `src/types/entityTypes.ts` - Internal types
+- [ ] `src/model/entityModel.ts` - Mongoose schema with proper validation and indexes
+- [ ] `src/dto/dtoTypes/entityDto.ts` - DTO interface
+- [ ] `src/dto/dtoMapper/entityDtoMapper.ts` - Mapper functions
+- [ ] `src/repository/interface/IEntityRepository.ts` - Repository interface
+- [ ] `src/repository/entityRepository.ts` - Repository implementation
+- [ ] `src/service/interface/IEntityService.ts` - Service interface
+- [ ] `src/service/entityService.ts` - Service implementation with business logic
+- [ ] `src/controller/entityController.ts` - Controller with proper error handling
+- [ ] `src/router/entityRouter.ts` - Routes with authentication middleware
+- [ ] Register router in `src/app.ts`
+- [ ] Test all CRUD operations
+- [ ] Verify proper error responses and status codes
+
+## 📝 Naming Conventions
+
+### **Files**
+- camelCase (`employeeController.ts`, `designationService.ts`)
+
+### **Classes**
+- PascalCase (`EmployeeController`, `DesignationService`)
+
+### **Interfaces**
+- PascalCase with `I` prefix (`IEmployeeService`, `IDesignationRepository`)
+
+### **DTOs**
+- PascalCase with `Dto` suffix (`EmployeeDto`, `DesignationDto`)
+
+### **Types**
+- PascalCase with `Type` suffix (`EmployeeType`, `DesignationBasicType`)
+
+## 🚨 Error Handling Standards
+
+### **Controller Error Handling**
+```typescript
+async createEntity(req: Request, res: Response) {
+    try {
+        // Controller logic
+        const result = await this.__entityService.createEntity(data);
+        return res.status(201).json(result);
+    } catch (error: any) {
+        console.error('Error creating entity:', error);
+        
+        // Handle specific error types
+        if (error.code === 11000) {
+            return res.status(409).json({
+                success: false,
+                message: 'Entity already exists'
+            });
+        }
+        
+        return res.status(500).json({
+            success: false,
+            message: error.message || 'Internal server error'
+        });
+    }
+}
+```
+
+### **Service Error Handling**
+```typescript
+async createEntity(data: EntityBasicType): Promise<BasicResponse<EntityDto>> {
+    try {
+        // Business logic validation
+        if (!data.requiredField) {
+            throw new Error('Required field is missing');
+        }
+        
+        // Service logic
+        const entity = await this.__entityRepository.createEntity(data);
+        const entityDto = entityDtoMapper(entity);
+        
+        return {
+            success: true,
+            message: 'Entity created successfully',
+            data: entityDto
+        };
+    } catch (error: any) {
+        // Let controller handle HTTP status codes
+        throw new Error(error.message || 'Failed to create entity');
+    }
+}
+```
+
+## ⚠️ **Critical Don'ts**
+- ❌ **NEVER skip the layered architecture** - Always use Controller → Service → Repository
+- ❌ **NEVER put business logic in controllers** - Keep it in services
+- ❌ **NEVER put HTTP logic in services** - Keep it in controllers
+- ❌ **NEVER return raw models from services** - Always use DTOs
+- ❌ **NEVER skip error handling** - Always implement proper try-catch blocks
+- ❌ **NEVER hardcode values** - Use constants and environment variables
+- ❌ **NEVER skip validation** - Always validate inputs at appropriate layers
+- ❌ **NEVER forget database indexes** - Always add indexes for performance
+- ❌ **NEVER expose internal errors** - Always provide user-friendly error messages
+
+## � **File Storage (Cloudinary) - MANDATORY**
+**ALL files and images MUST be stored in Cloudinary** - Configuration is already set up:
+
+### **Cloudinary Configuration:**
+- **Config File**: `src/config/cloudinaryConfig.ts` contains all necessary Cloudinary settings
+- **Environment Variables**: Cloudinary credentials are configured in environment variables
+- **Multer Integration**: Use existing multer middleware that automatically uploads to Cloudinary
+
+### **File Upload Implementation:**
+```typescript
+// Use existing multer middleware for file uploads
+import { uploadMiddleware } from '../middlewares/multer';
+
+// In your router
+router.post('/upload', authenticationMiddleware, uploadMiddleware.single('file'), uploadController.uploadFile);
+
+// In your controller
+async uploadFile(req: Request, res: Response) {
+    try {
+        if (!req.file) {
+            return res.status(400).json({
+                success: false,
+                message: 'No file uploaded'
+            });
+        }
+
+        // Cloudinary URL is automatically available in req.file
+        const cloudinaryUrl = (req.file as any).path; // Cloudinary secure_url
+        
+        return res.status(200).json({
+            success: true,
+            message: 'File uploaded successfully',
+            data: {
+                url: cloudinaryUrl,
+                public_id: (req.file as any).filename
+            }
+        });
+    } catch (error: any) {
+        return res.status(500).json({
+            success: false,
+            message: error.message || 'File upload failed'
+        });
+    }
+}
+```
+
+### **File Storage Standards:**
+- **Never store files locally** - Always use the configured Cloudinary service
+- **Use existing multer middleware** - Don't create new upload configurations
+- **Organize with folders** - Use Cloudinary folder structure for file organization
+- **Store URLs in database** - Save Cloudinary secure_url in your models
+- **Handle file validation** - Validate file types, sizes, and formats
+- **Error handling** - Proper error responses for upload failures
+
+### **Model Integration:**
+```typescript
+// Store Cloudinary URLs in your schemas
+const employeeSchema = new Schema({
+    name: { type: String, required: true },
+    profileImage: { 
+        type: String, // Cloudinary secure_url
+        validate: {
+            validator: (url: string) => url.startsWith('https://res.cloudinary.com/'),
+            message: 'Profile image must be a valid Cloudinary URL'
+        }
+    },
+    documents: [{
+        name: String,
+        url: String, // Cloudinary secure_url
+        publicId: String // Cloudinary public_id for deletion
+    }]
+});
+```
+
+## �🛠️ Technical Stack
+- **Runtime**: Node.js
+- **Language**: TypeScript
+- **Framework**: Express.js
+- **Database**: MongoDB with Mongoose
+- **Authentication**: JWT (Access + Refresh tokens)
+- **File Storage**: Cloudinary (configured and ready to use)
+- **File Upload**: Multer + Cloudinary integration
+- **Validation**: Custom validators + Mongoose validation
+- **Development**: Nodemon, ts-node
+
+This backend architecture ensures maintainable, scalable, and type-safe code with proper separation of concerns, error handling, database optimization, and cloud-based file storage.
