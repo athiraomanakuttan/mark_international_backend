@@ -28,6 +28,7 @@ import leaveRouter from './router/leaveRouter';
 import { uploadRouter } from './router/uploadRouter';
 import adminResignationRouter from './router/admin/resignationRouter';
 import staffResignationRouter from './router/staff/resignationRouter';
+import adminTerminationRouter from './router/admin/terminationRouter';
 
 const app = express();
 
@@ -79,5 +80,6 @@ app.use('/api', leaveRouter)
 app.use('/api/upload', uploadRouter)
 app.use('/api/admin/resignations', adminResignationRouter)
 app.use('/api/staff/resignation', staffResignationRouter)
+app.use('/api/admin/terminations', adminTerminationRouter)
 
 export default app;
