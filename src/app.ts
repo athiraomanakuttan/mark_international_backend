@@ -26,6 +26,8 @@ import eventRouter from './router/eventRouter';
 import registrationRouter from './router/registrationRouter';
 import leaveRouter from './router/leaveRouter';
 import { uploadRouter } from './router/uploadRouter';
+import adminResignationRouter from './router/admin/resignationRouter';
+import staffResignationRouter from './router/staff/resignationRouter';
 
 const app = express();
 
@@ -75,4 +77,7 @@ app.use('/api/students', eventRouter)
 app.use('/api', registrationRouter)
 app.use('/api', leaveRouter)
 app.use('/api/upload', uploadRouter)
+app.use('/api/admin/resignations', adminResignationRouter)
+app.use('/api/staff/resignation', staffResignationRouter)
+
 export default app;

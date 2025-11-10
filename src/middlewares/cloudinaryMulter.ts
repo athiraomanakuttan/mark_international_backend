@@ -118,6 +118,10 @@ const generalCloudinaryMiddleware = createCloudinaryMiddleware('uploads');
 const multipleMulter = createMulterUpload(documentFilter, 10 * 1024 * 1024); // 10MB per file
 const multipleCloudinaryMiddleware = createCloudinaryMiddleware('uploads/multiple');
 
+// Resignation document upload configuration
+const resignationMulter = createMulterUpload(documentFilter, 5 * 1024 * 1024); // 5MB
+const resignationCloudinaryMiddleware = createCloudinaryMiddleware('resignations/documents');
+
 // Combined middleware functions
 export const uploadEmployeeFiles = [
   employeeMulter.single('profilePicture'),
@@ -132,6 +136,11 @@ export const uploadSingleFile = [
 export const uploadMultipleFiles = [
   multipleMulter.array('files', 10),
   multipleCloudinaryMiddleware
+];
+
+export const uploadResignationDocument = [
+  resignationMulter.single('document'),
+  resignationCloudinaryMiddleware
 ];
 
 // Export individual components for custom use
