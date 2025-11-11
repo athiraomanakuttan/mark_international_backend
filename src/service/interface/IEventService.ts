@@ -11,4 +11,7 @@ export interface IEventService {
     createStudent(studentData: StudentData): Promise<StudentData>;
     getRecentEvents(date: Date, upcoming: boolean, id?: string): Promise<IEventType[]>;
     getStudentByEventId(eventId: string, staffId?: string): Promise<any>;
+    getUpcomingEvents(id?: string): Promise<IEventType[]>;
+    getOngoingEvents(id?: string): Promise<IEventType[]>;
+    getPastEvents(id?: string): Promise<IEventType[]>;
 }

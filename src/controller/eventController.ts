@@ -106,4 +106,46 @@ startOfDay.setHours(0, 0, 0, 0);
         }
     }
 
+    async getUpcomingEventsByStatus(req:CustomRequestType, res:Response):Promise<void>{
+        try{
+            const id = String(req.user?.id)
+            const role = String(req.user?.role)
+            const events = await this.__eventService.getUpcomingEvents(role!=="admin"?id:undefined);
+            res.status(STATUS_CODE.OK).json({status: true, data: events});
+        }catch(err){
+            res.status(STATUS_CODE.INTERNAL_SERVER_ERROR).json({status: false, message:MESSAGE_CONST.INTERNAL_SERVER_ERROR})
+        }
+    }
+
+    async getOngoingEventsByStatus(req:CustomRequestType, res:Response):Promise<void>{
+        try{
+            const id = String(req.user?.id)
+            const role = String(req.user?.role)
+            const events = await this.__eventService.getOngoingEvents(role!=="admin"?id:undefined);
+            res.status(STATUS_CODE.OK).json({status: true, data: events});
+        }catch(err){
+            res.status(STATUS_CODE.INTERNAL_SERVER_ERROR).json({status: false, message:MESSAGE_CONST.INTERNAL_SERVER_ERROR})
+        }
+    }
+
+    async getPastEventsByStatus(req:CustomRequestType, res:Response):Promise<void>{
+        try{
+            const id = String(req.user?.id)
+            const role = String(req.user?.role)
+            const events = await this.__eventService.getPastEvents(role!=="admin"?id:undefined);
+            res.status(STATUS_CODE.OK).json({status: true, data: events});
+        }catch(err){
+            res.status(STATUS_CODE.INTERNAL_SERVER_ERROR).json({status: false, message:MESSAGE_CONST.INTERNAL_SERVER_ERROR})
+        }
+    }
+
+    async getAllEvents(req:CustomRequestType, res:Response):Promise<void>{
+        try{
+            const events = await this.__eventService.getAllEvents();
+            res.status(STATUS_CODE.OK).json({status: true, data: events});
+        }catch(err){
+            res.status(STATUS_CODE.INTERNAL_SERVER_ERROR).json({status: false, message:MESSAGE_CONST.INTERNAL_SERVER_ERROR})
+        }
+    }
+
 }

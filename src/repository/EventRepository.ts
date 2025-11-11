@@ -43,7 +43,8 @@ export class EventRepository implements IEventRepository{
 
     async getAllEvents(): Promise<IEventType[]> {
         try {
-            return await EventModel.find().exec();
+            // Return all events sorted by start date (newest first)
+            return await EventModel.find().sort({ startDate: -1 }).exec();
         } catch (error) {
             throw new Error("Error fetching events");
         }
@@ -51,12 +52,14 @@ export class EventRepository implements IEventRepository{
 
     async getEventsByDate(date: Date, upcoming: boolean, id?: string): Promise<IEventType[]> {
         try {
-            const query: any = {}
-             query["date"] = upcoming ? { $gte: date }  :  { $lte: date };
+            const query: any = {};
+            
+            query["startDate"] = upcoming ? { $gte: date }  :  { $lte: date };
+            
             if(id){
                query.staffIds = { $in: [id] };
             }
-            return await EventModel.find(query).sort({date:1}).exec();
+            return await EventModel.find(query).sort({startDate:1}).exec();
         } catch (error) {
             throw new Error("Error fetching events");
         }
@@ -74,14 +77,15 @@ export class EventRepository implements IEventRepository{
 async getRecentEvents(date: Date, upcoming: boolean, id?: string): Promise<IEventType[]> {
     try {
         const query: any = {};
-        query["date"] = upcoming ? { $gte: date } : { $lte: date };
+        
+        query["startDate"] = upcoming ? { $gte: date } : { $lte: date };
         
         if (id) {
             query.staffIds = { $in: [id] };
         }
 
         const response =  await EventModel.find(query)
-            .sort({ date: -1 })
+            .sort({ startDate: -1 })
             .populate("staffIds", "name _id") // 👈 fetch only name & id from Staff
             .exec();
         console.log(response[0])
@@ -107,6 +111,76 @@ async getStudentByEventId(eventId: string, staffId?: string): Promise<any> {
 
     } catch (error) {
         throw new Error("Error fetching student");
+    }
+}
+
+// Get upcoming events (startDate > today)
+async getUpcomingEvents(id?: string): Promise<IEventType[]> {
+    try {
+        const today = new Date();
+        today.setHours(0, 0, 0, 0);
+        
+        const query: any = {
+            startDate: { $gt: today }
+        };
+        
+        if (id) {
+            query.staffIds = { $in: [id] };
+        }
+
+        return await EventModel.find(query)
+            .sort({ startDate: 1 })
+            .populate("staffIds", "name _id")
+            .exec();
+    } catch (error) {
+        throw new Error("Error fetching upcoming events");
+    }
+}
+
+// Get ongoing events (startDate <= today AND endDate >= today)
+async getOngoingEvents(id?: string): Promise<IEventType[]> {
+    try {
+        const today = new Date();
+        today.setHours(0, 0, 0, 0);
+        
+        const query: any = {
+            startDate: { $lte: today },
+            endDate: { $gte: today }
+        };
+        
+        if (id) {
+            query.staffIds = { $in: [id] };
+        }
+
+        return await EventModel.find(query)
+            .sort({ startDate: -1 })
+            .populate("staffIds", "name _id")
+            .exec();
+    } catch (error) {
+        throw new Error("Error fetching ongoing events");
+    }
+}
+
+// Get past events (endDate < today)
+async getPastEvents(id?: string): Promise<IEventType[]> {
+    try {
+        const today = new Date();
+        today.setHours(0, 0, 0, 0);
+        
+        const query: any = {
+            endDate: { $lt: today }
+        };
+        
+        if (id) {
+            query.staffIds = { $in: [id] };
+        }
+
+        return await EventModel.find(query)
+            .sort({ startDate: -1 })
+            .populate("staffIds", "name _id")
+            .exec();
+    } catch (error) {
+        throw new Error("Error fetching past events");
     }
 }
 }

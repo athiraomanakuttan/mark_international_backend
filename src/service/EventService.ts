@@ -44,4 +44,16 @@ export class EventService implements IEventService {
     async getStudentByEventId(eventId: string, staffId?: string): Promise<any> {
         return this.__eventRepository.getStudentByEventId(eventId, staffId);
     }
+
+    async getUpcomingEvents(id?: string): Promise<IEventType[]> {
+        return this.__eventRepository.getUpcomingEvents(id);
+    }
+
+    async getOngoingEvents(id?: string): Promise<IEventType[]> {
+        return this.__eventRepository.getOngoingEvents(id);
+    }
+
+    async getPastEvents(id?: string): Promise<IEventType[]> {
+        return this.__eventRepository.getPastEvents(id);
+    }
 }
