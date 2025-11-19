@@ -44,10 +44,6 @@ const terminationSchema = new Schema<ITermination>({
   timestamps: true,
 });
 
-// Indexes for better query performance
-terminationSchema.index({ type: 1 });
-terminationSchema.index({ personId: 1 });
-terminationSchema.index({ terminatedAt: -1 });
 
 const Termination = model<ITermination>("Termination", terminationSchema);
 export default Termination;

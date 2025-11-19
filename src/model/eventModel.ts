@@ -20,8 +20,5 @@ const EventSchema = new Schema<IEventType>({
     timestamps: true
 })
 
-// Index for querying active events
-EventSchema.index({ endDate: 1 });
-EventSchema.index({ isFinished: 1 });
 
 export const EventModel = model<IEventType>('Event', EventSchema)

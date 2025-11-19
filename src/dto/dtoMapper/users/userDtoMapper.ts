@@ -12,6 +12,7 @@ export const mapUserToDto = (user: IUser): UserData => {
     status:user.isActive || -1,
     createdAt: user.createdAt,
     role: user.role,
+    profilePic: typeof user.profilePic === 'string' ? user.profilePic : null,
   };
 };
 

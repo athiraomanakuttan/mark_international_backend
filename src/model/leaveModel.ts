@@ -80,10 +80,6 @@ const leaveSchema = new Schema<ILeave>({
   toObject: { virtuals: true }
 });
 
-// Compound index for efficient queries
-leaveSchema.index({ userId: 1, leaveDate: 1 });
-leaveSchema.index({ userId: 1, status: 1 });
-leaveSchema.index({ leaveDate: 1, status: 1 });
 
 // Pre-save middleware to validate leave date against user's joining date
 leaveSchema.pre('save', async function(next) {

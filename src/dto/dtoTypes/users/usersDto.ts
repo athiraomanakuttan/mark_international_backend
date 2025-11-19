@@ -8,6 +8,7 @@ export interface UserData{
     role: string
     status : number
     createdAt?: Date
+    profilePic?: string | null;
 }
 
 export interface IUserDto{

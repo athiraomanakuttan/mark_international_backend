@@ -38,10 +38,7 @@ const designationSchema = new Schema<IDesignation>(
   }
 );
 
-// Index for better query performance
-designationSchema.index({ name: 1 });
-designationSchema.index({ status: 1 });
-designationSchema.index({ createdAt: -1 });
+
 
 const Designation = mongoose.model<IDesignation>('Designation', designationSchema);
 

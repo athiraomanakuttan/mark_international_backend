@@ -13,6 +13,12 @@ class StaffController {
   async createStaff(req: Request, res: Response): Promise<void> {
     try {
       const staffData: StaffBasicType = req.body;
+      // Handle profilePic from file upload
+      if (req.file && req.file.path) {
+        staffData.profilePic = req.file.path;
+      } else {
+        staffData.profilePic = null;
+      }
       if (!staffData || !staffData.name) {
         res
           .status(STATUS_CODE.BAD_REQUEST)
@@ -61,6 +67,12 @@ class StaffController {
     try {
       const staffId = req.params.id;
       const staffData: StaffUpdateType = req.body;
+      // Handle profilePic from file upload
+      if (req.file && req.file.path) {
+        staffData.profilePic = req.file.path;
+      } else if (typeof staffData.profilePic === 'undefined') {
+        staffData.profilePic = null;
+      }
       if (!staffId || !staffData) {
         res
           .status(STATUS_CODE.BAD_REQUEST)
