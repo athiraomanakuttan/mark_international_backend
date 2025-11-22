@@ -13,7 +13,6 @@ class StaffController {
   async createStaff(req: Request, res: Response): Promise<void> {
     try {
       const staffData: StaffBasicType = req.body;
-      // Handle profilePic from file upload
       if (req.file && req.file.path) {
         staffData.profilePic = req.file.path;
       } else {

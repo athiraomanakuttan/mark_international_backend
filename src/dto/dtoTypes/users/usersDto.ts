@@ -9,6 +9,8 @@ export interface UserData{
     status : number
     createdAt?: Date
     profilePic?: string | null;
+    branchId?: string;
+    branchName?: string;
 }
 
 export interface IUserDto{

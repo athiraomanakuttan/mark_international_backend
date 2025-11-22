@@ -24,20 +24,22 @@ class StaffRepository implements IStaffRepository {
   async getActiveStaff(page: number, limit: number, role: string, status: number): Promise<StaffResponse> {
     try {
       const skip = (page - 1) * limit;
-      const staffList = await User.find({ role, isActive: status }).sort({createdAt: -1})
+      const staffList = await User.find({ role, isActive: status })
+        .populate('branchId', 'branchName')
+        .sort({ createdAt: -1 })
         .skip(skip)
-        .limit(limit)
-        const DtoData = mapUsersToDto(staffList);
-        const totalRecords = await User.find({role,isActive:status}).countDocuments();
+        .limit(limit);
+      const DtoData = mapUsersToDto(staffList);
+      const totalRecords = await User.find({ role, isActive: status }).countDocuments();
       return { users: DtoData, totalRecords } as StaffResponse;
     } catch (err) {
       throw new Error("Failed to retrieve active staff");
-    } 
+    }
   }
 
   async updateStaff(staffId: string, staffData: StaffUpdateType): Promise<UserData | null> {
     try {
-      const updatedStaff = await User.findByIdAndUpdate(staffId, staffData, { new: true });
+      const updatedStaff = await User.findByIdAndUpdate(staffId, staffData, { new: true }).populate('branchId', 'branchName');
       if (!updatedStaff) {
         return null;
       }
@@ -71,9 +73,12 @@ class StaffRepository implements IStaffRepository {
 
   async getStaffById(id: string): Promise<any> {
     try {
-      return  await User.findOne({_id: id},{password:0})
+      const user = await User.findOne({ _id: id }, { password: 0 }).populate('branchId', 'branchName');
+      if (!user) return null;
+      // Use DTO mapping to include branchId and branchName
+      return require('../../dto/dtoMapper/users/userDtoMapper').mapUserToDto(user);
     } catch (error) {
-      throw error
+      throw error;
     }
   }
 }

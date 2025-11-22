@@ -1,7 +1,7 @@
 import { IUser } from "../../../types/modelTypes";
-import {  UserData } from '../../dtoTypes/users/usersDto'; 
+import { UserData } from '../../dtoTypes/users/usersDto'; 
 
-export const mapUserToDto = (user: IUser): UserData => {
+export const mapUserToDto = (user: any): UserData => {
   return {
     id: user?._id!.toString(),
     name: user.name,
@@ -9,13 +9,15 @@ export const mapUserToDto = (user: IUser): UserData => {
     phoneNumber: user.phoneNumber,
     designation: user.designation,
     isAdmin: user.role === 'admin',
-    status:user.isActive || -1,
+    status: user.isActive || -1,
     createdAt: user.createdAt,
     role: user.role,
     profilePic: typeof user.profilePic === 'string' ? user.profilePic : null,
+    branchId: user.branchId,
+    branchName: user.branchId && user.branchId.branchName ? user.branchId.branchName : undefined,
   };
 };
 
-export const mapUsersToDto = (students: IUser[]): UserData[] => {
-  return students.map(mapUserToDto);
+export const mapUsersToDto = (users: any[]): UserData[] => {
+  return users.map(mapUserToDto);
 };
