@@ -24,6 +24,7 @@ class StaffController {
           .json({ error: "Invalid staff data" });
         return;
       }
+      console.log("Staff Data:", staffData);
       const createdStaff = await this.__staffService.createStaff(staffData);
       res
         .status(STATUS_CODE.CREATED)
