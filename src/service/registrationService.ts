@@ -43,7 +43,9 @@ export class RegistrationService implements IRegistrationService {
           country: registrationData.country
         },
         documents: documentUrls,
-        status: 1 // pending
+        status: 1, // pending
+        userId: registrationData.userId,
+        role: registrationData.role
       };
 
       // Save to database

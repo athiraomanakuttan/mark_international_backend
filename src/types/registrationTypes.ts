@@ -26,6 +26,8 @@ export interface IRegistration {
   address: IAddress;
   documents: IDocument[];
   status: number; // 1: pending, 2: approved, 3: rejected
+  userId: string;
+  role: 'employee' | 'staff';
   createdAt?: Date;
   updatedAt?: Date;
 }
@@ -65,4 +67,6 @@ export interface CreateRegistrationDto {
   state: string;
   pincode: string;
   country: string;
+  userId: string;
+  role: 'employee' | 'staff';
 }

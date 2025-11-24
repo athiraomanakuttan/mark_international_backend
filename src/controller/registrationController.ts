@@ -13,10 +13,6 @@ export class RegistrationController {
 
   async createRegistration(req: Request, res: Response): Promise<void> {
     try {
-      // Extract form data from request body
-      // Support two shapes for address:
-      // 1) separate fields: street, city, state, pincode, country
-      // 2) single JSON string field: address = '{"street":"...","city":"..."}'
       let parsedAddress: any = {};
       if (req.body && req.body.address) {
         const addrField = req.body.address;
@@ -24,7 +20,6 @@ export class RegistrationController {
           try {
             parsedAddress = JSON.parse(addrField);
           } catch (err) {
-            // ignore parse errors and leave parsedAddress empty
             parsedAddress = {};
           }
         } else if (typeof addrField === 'object') {
@@ -32,6 +27,21 @@ export class RegistrationController {
         }
       }
 
+      let role: 'employee' | 'staff' = 'employee';
+      const id = req.body.id;
+      const User = (await import('../model/userModel')).default;
+      const Employee = (await import('../model/employeeModel')).default;
+      if (id) {
+        const staffExists = await User.findOne({ _id: id });
+        if (staffExists) {
+          role = 'staff';
+        } else {
+          const employeeExists = await Employee.findOne({ _id: id });
+          if (employeeExists) {
+            role = 'employee';
+          }
+        }
+      }
       const registrationData: CreateRegistrationDto = {
         name: req.body.name,
         dateOfBirth: req.body.dateOfBirth,
@@ -41,7 +51,9 @@ export class RegistrationController {
         city: parsedAddress.city || req.body.city,
         state: parsedAddress.state || req.body.state,
         pincode: parsedAddress.pincode ? String(parsedAddress.pincode) : req.body.pincode,
-        country: parsedAddress.country || req.body.country
+        country: parsedAddress.country || req.body.country,
+        userId: id,
+        role
       };
 
       // Extract uploaded files and keep only those that belong to documents
