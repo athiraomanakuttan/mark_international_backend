@@ -3,6 +3,7 @@ import { Request, Response } from "express";
 import { STATUS_CODE } from "../../constance/statusCode";
 import { StaffBasicType, StaffUpdateType } from "../../types/staffType";
 import { MESSAGE_CONST } from "../../constant/MessageConst";
+import { sendWelcomeEmail } from "../../service/emailService";
 class StaffController {
   private __staffService: IStaffService;
 
@@ -26,6 +27,17 @@ class StaffController {
       }
       console.log("Staff Data:", staffData);
       const createdStaff = await this.__staffService.createStaff(staffData);
+
+      // Send welcome email if email exists
+      if (createdStaff && createdStaff.email) {
+        try {
+          const staffId = createdStaff.id?.toString() || createdStaff._id?.toString();
+          await sendWelcomeEmail(createdStaff.email, staffId, createdStaff.name);
+        } catch (err) {
+          console.error('Error sending welcome email to staff:', err);
+        }
+      }
+
       res
         .status(STATUS_CODE.CREATED)
         .json({
