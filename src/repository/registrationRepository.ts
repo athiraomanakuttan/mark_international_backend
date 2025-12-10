@@ -23,16 +23,18 @@ export class RegistrationRepository implements IRegistrationRepository {
     }
   }
 
-  async getAllRegistrations(page: number, limit: number): Promise<{ registrations: IRegistration[], total: number }> {
+  async getAllRegistrations(page: number, limit: number, role?: 'employee' | 'staff'): Promise<{ registrations: IRegistration[], total: number }> {
     try {
       const skip = (page - 1) * limit;
-      const registrations = await RegistrationModel.find()
+      const filter: any = {};
+      if (role) {
+        filter.role = role;
+      }
+      const registrations = await RegistrationModel.find(filter)
         .skip(skip)
         .limit(limit)
         .sort({ createdAt: -1 });
-      
-      const total = await RegistrationModel.countDocuments();
-      
+      const total = await RegistrationModel.countDocuments(filter);
       return {
         registrations: registrations.map((reg: IRegistration & Document) => reg.toObject()),
         total

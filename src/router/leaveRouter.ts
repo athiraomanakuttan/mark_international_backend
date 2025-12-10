@@ -48,6 +48,10 @@ router.get('/leaves/stats',
   (req, res) => leaveController.getLeaveStats(req, res)
 );
 
+router.get('/leaves/dashboard/stats/:userId', 
+  (req, res) => leaveController.getAttendanceDashboardStats(req, res)
+);
+
 router.get('/leaves/summary/monthly', 
   (req, res) => leaveController.getMonthlyLeaveSummary(req, res)
 );

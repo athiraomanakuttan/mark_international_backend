@@ -22,8 +22,7 @@ export class LeaveController {
       };
 
       // Extract uploaded files (if any)
-      const files = req.files as Express.Multer.File[] | undefined;
-      const leaveFiles = files ? files.filter(f => f.fieldname && f.fieldname.includes('documents')) : [];
+      const leaveFiles = req.files as Express.Multer.File[] | undefined || [];
 
       // Create leave request
       const result = await this.__leaveService.createLeave(leaveData, leaveFiles);
@@ -203,6 +202,25 @@ export class LeaveController {
       if (req.query.dateFrom) filters.dateFrom = req.query.dateFrom as string;
       if (req.query.dateTo) filters.dateTo = req.query.dateTo as string;
 
+      // Handle period filter (upcoming/past)
+      const period = req.query.period as string;
+      if (period) {
+        const today = new Date();
+        today.setHours(0, 0, 0, 0); // Start of today
+
+        if (period === 'upcoming') {
+          // Leaves from today onwards
+          filters.dateFrom = today.toISOString();
+        } else if (period === 'past') {
+          // Leaves before today
+          // We set dateTo to the end of yesterday (effectively < today)
+          const yesterday = new Date(today);
+          yesterday.setDate(yesterday.getDate() - 1);
+          yesterday.setHours(23, 59, 59, 999);
+          filters.dateTo = yesterday.toISOString();
+        }
+      }
+
       const result = await this.__leaveService.getLeavesByUserId(userId, filters);
       res.status(STATUS_CODE.OK).json(result);
     } catch (error) {
@@ -317,6 +335,44 @@ export class LeaveController {
       });
     } catch (error) {
       console.error('Get leave stats error:', error);
+      res.status(STATUS_CODE.INTERNAL_SERVER_ERROR).json({
+        success: false,
+        message: MESSAGE_CONST.INTERNAL_SERVER_ERROR
+      });
+    }
+  }
+
+  async getAttendanceDashboardStats(req: Request, res: Response): Promise<void> {
+    try {
+      const { userId } = req.params;
+      const year = parseInt(req.query.year as string) || new Date().getFullYear();
+      const month = parseInt(req.query.month as string) || new Date().getMonth() + 1;
+
+      if (!userId) {
+        res.status(STATUS_CODE.BAD_REQUEST).json({
+          success: false,
+          message: 'User ID is required'
+        });
+        return;
+      }
+
+      if (month < 1 || month > 12) {
+        res.status(STATUS_CODE.BAD_REQUEST).json({
+          success: false,
+          message: 'Invalid month. Must be between 1 and 12'
+        });
+        return;
+      }
+
+      const stats = await this.__leaveService.getAttendanceDashboardStats(userId, year, month);
+      
+      res.status(STATUS_CODE.OK).json({
+        success: true,
+        message: 'Attendance dashboard stats retrieved successfully',
+        data: stats
+      });
+    } catch (error) {
+      console.error('Get attendance dashboard stats error:', error);
       res.status(STATUS_CODE.INTERNAL_SERVER_ERROR).json({
         success: false,
         message: MESSAGE_CONST.INTERNAL_SERVER_ERROR

@@ -1,4 +1,3 @@
-import { ILeaveRepository, LeaveRepository } from '../repository/leaveRepository';
 import { 
   CreateLeaveDto, 
   LeaveResponse, 
@@ -12,6 +11,8 @@ import {
 import { ILeave, LeaveStatus } from '../model/leaveModel';
 import { cloudinary } from '../config/cloudinaryConfig';
 import { UploadApiResponse } from 'cloudinary';
+import { ILeaveRepository } from '../repository/interface/ILeaveRepository';
+import { LeaveRepository } from '../repository/leaveRepository';
 
 export interface ILeaveService {
   createLeave(leaveData: CreateLeaveDto, files?: Express.Multer.File[]): Promise<LeaveResponse>;
@@ -24,6 +25,13 @@ export interface ILeaveService {
   getLeavesByDateRange(dateFrom: string, dateTo: string, filters?: Partial<LeaveQueryFilters>): Promise<LeaveResponse>;
   getLeaveStats(): Promise<LeaveStats>;
   getMonthlyLeaveSummary(year: number): Promise<MonthlyLeaveSummary[]>;
+  getAttendanceDashboardStats(userId: string, year: number, month: number, referenceDate?: Date): Promise<{
+    presentDays: number;
+    absentDays: number;
+    pendingLeaves: number;
+    approvedLeaves: number;
+    attendanceRate: number;
+  }>;
 }
 
 export class LeaveService implements ILeaveService {
@@ -220,6 +228,81 @@ export class LeaveService implements ILeaveService {
   async getMonthlyLeaveSummary(year: number): Promise<MonthlyLeaveSummary[]> {
     try {
       return await this.__leaveRepository.getMonthlyLeaveSummary(year);
+    } catch (error) {
+      throw error;
+    }
+  }
+
+  async getAttendanceDashboardStats(userId: string, year: number, month: number, referenceDate?: Date): Promise<{
+    presentDays: number;
+    absentDays: number;
+    pendingLeaves: number;
+    approvedLeaves: number;
+    attendanceRate: number;
+  }> {
+    try {
+      // Calculate start and end of month
+      const startDate = new Date(year, month - 1, 1);
+      const endDate = new Date(year, month, 0); // Last day of month
+      const totalDaysInMonth = endDate.getDate();
+
+      // Get leaves for this user in this month
+      const { leaves } = await this.__leaveRepository.getLeavesByDateRange(
+        startDate,
+        endDate,
+        { userId }
+      );
+
+      // Calculate stats
+      const approvedLeaves = leaves.filter(l => l.status === LeaveStatus.APPROVED);
+      const pendingLeaves = leaves.filter(l => l.status === LeaveStatus.PENDING).length;
+      
+      const today = referenceDate ? new Date(referenceDate) : new Date();
+      today.setHours(0, 0, 0, 0);
+
+      // Absent days = Approved leaves in the past
+      const absentDays = approvedLeaves.filter(l => {
+        const leaveDate = new Date(l.leaveDate);
+        leaveDate.setHours(0, 0, 0, 0);
+        return leaveDate < today;
+      }).length;
+
+      // Present days
+      // If month is past: Total Days - Absent Days
+      // If month is current: Days Passed - Absent Days
+      // If month is future: 0
+      
+      let presentDays = 0;
+      const currentYear = today.getFullYear();
+      const currentMonth = today.getMonth() + 1; // 1-indexed
+
+      if (year < currentYear || (year === currentYear && month < currentMonth)) {
+        // Past month
+        presentDays = totalDaysInMonth - absentDays;
+      } else if (year === currentYear && month === currentMonth) {
+        // Current month
+        const daysPassed = today.getDate();
+        presentDays = daysPassed - absentDays;
+      } else {
+        // Future month
+        presentDays = 0;
+      }
+
+      // Ensure non-negative
+      presentDays = Math.max(0, presentDays);
+
+      // Attendance Rate
+      const totalRecorded = presentDays + absentDays;
+      const attendanceRate = totalRecorded > 0 ? Math.round((presentDays / totalRecorded) * 100) : 0;
+
+      return {
+        presentDays,
+        absentDays,
+        pendingLeaves,
+        approvedLeaves: approvedLeaves.length,
+        attendanceRate
+      };
+
     } catch (error) {
       throw error;
     }
