@@ -68,12 +68,6 @@ const employeeSchema = new Schema<IEmployee>(
   }
 );
 
-// Indexes for better query performance
-employeeSchema.index({ email: 1 });
-employeeSchema.index({ name: 1 });
-employeeSchema.index({ designation: 1 });
-employeeSchema.index({ status: 1 });
-employeeSchema.index({ createdAt: -1 });
 
 const Employee = mongoose.model<IEmployee>('Employee', employeeSchema);
 

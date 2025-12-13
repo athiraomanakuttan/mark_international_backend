@@ -12,6 +12,7 @@ export interface IUser {
     profilePic?: File | null;
     openingBalance?: number;
     role: "admin" | "staff";
+    branchId?: mongoose.Types.ObjectId | string;
     joiningDate?: Date;
     createdAt?: Date;
     updatedAt?: Date;

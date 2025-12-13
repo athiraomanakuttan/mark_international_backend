@@ -9,6 +9,8 @@ export interface StaffBasicType {
     openingBalance?: number;
     role: string,
     isActive: number,
+    branchId?: string;
+    branchName?:string
 };
 
 export interface StaffUpdateType {
@@ -22,4 +24,5 @@ export interface StaffUpdateType {
     openingBalance?: number,
     role?: string,
     isActive?: number,
+    branchId?: string;
 };

@@ -43,7 +43,9 @@ export class RegistrationService implements IRegistrationService {
           country: registrationData.country
         },
         documents: documentUrls,
-        status: 1 // pending
+        status: 1, // pending
+        userId: registrationData.userId,
+        role: registrationData.role
       };
 
       // Save to database
@@ -71,9 +73,9 @@ export class RegistrationService implements IRegistrationService {
     }
   }
 
-  async getAllRegistrations(page: number, limit: number): Promise<{ registrations: IRegistration[], total: number }> {
+  async getAllRegistrations(page: number, limit: number, role?: 'employee' | 'staff'): Promise<{ registrations: IRegistration[], total: number }> {
     try {
-      return await this.__registrationRepository.getAllRegistrations(page, limit);
+      return await this.__registrationRepository.getAllRegistrations(page, limit, role);
     } catch (error) {
       throw error;
     }

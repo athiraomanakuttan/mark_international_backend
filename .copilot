@@ -184,10 +184,6 @@ const employeeSchema: Schema<EmployeeType> = new Schema({
     versionKey: false
 });
 
-// Indexes for performance
-employeeSchema.index({ email: 1 });
-employeeSchema.index({ designation: 1 });
-employeeSchema.index({ isActive: 1 });
 
 export const EmployeeModel = mongoose.model<EmployeeType>('Employee', employeeSchema);
 ```
@@ -419,10 +415,6 @@ export { router as employeeRouter };
 // - Foreign key references (designation, user)
 // - Query filter fields (isActive, status)
 // - Search fields (name, email)
-
-employeeSchema.index({ email: 1 });
-employeeSchema.index({ designation: 1 });
-employeeSchema.index({ isActive: 1 });
 ```
 
 ### **Schema Validation**

@@ -8,9 +8,10 @@ const userSchema = new Schema<IUser & Document>({
   designation: { type: String, required: true },
   email: { type: String, required: false },
   accessibleUsers: { type: [Number], default: [] },
-  profilePic: { type: Schema.Types.Mixed },
+  profilePic: { type: Schema.Types.Mixed, default: null },
   openingBalance: { type: Number, default: 0 },
   role: { type: String, enum: ["admin", "staff"], required: true, default: "staff" },
+  branchId: { type: Schema.Types.ObjectId, ref: "Branch", required: false },
   joiningDate: { type: Date, default: Date.now },
   isActive: { type: Number, default:1, enum: [0, 1, -1] },
 }, {

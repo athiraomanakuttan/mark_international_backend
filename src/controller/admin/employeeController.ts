@@ -87,6 +87,18 @@ export class EmployeeController {
 
       const employee = await this.__employeeService.createEmployee(employeeData);
 
+      // Send welcome email if email exists
+      if (employee && employee.email) {
+        try {
+          // Import email service dynamically to avoid circular deps
+          const { sendWelcomeEmail } = await import('../../service/emailService');
+          const employeeId = employee.id?.toString();
+          await sendWelcomeEmail(employee.email, employeeId, employee.name);
+        } catch (err) {
+          console.error('Error sending welcome email:', err);
+        }
+      }
+
       res.status(STATUS_CODE.CREATED).json({
         status: true,
         message: 'Employee created successfully',

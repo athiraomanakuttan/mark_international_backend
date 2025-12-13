@@ -52,10 +52,6 @@ const resignationSchema = new Schema<IResignation>(
   }
 );
 
-// Indexes for better query performance
-resignationSchema.index({ staffId: 1 });
-resignationSchema.index({ status: 1 });
-resignationSchema.index({ createdAt: -1 });
 
 const Resignation = mongoose.model<IResignation>('Resignation', resignationSchema);
 

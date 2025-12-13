@@ -41,6 +41,8 @@ const registrationSchema = new Schema<IRegistration & Document>({
     enum: [1, 2, 3], 
     default: 1 
   }, // 1: pending, 2: approved, 3: rejected
+  userId: { type: String, required: true },
+  role: { type: String, enum: ['employee', 'staff'], required: true },
 }, { timestamps: true });
 
 const RegistrationModel = model<IRegistration & Document>('Registration', registrationSchema);
