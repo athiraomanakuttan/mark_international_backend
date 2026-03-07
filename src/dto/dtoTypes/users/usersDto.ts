@@ -8,6 +8,7 @@ export interface UserData{
     role: string
     status : number
     createdAt?: Date
+    joiningDate?: Date | string
     profilePic?: string | null;
     branchId?: string;
     branchName?: string;

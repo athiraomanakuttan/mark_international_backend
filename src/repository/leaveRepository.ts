@@ -18,7 +18,7 @@ export class LeaveRepository implements ILeaveRepository {
   async getLeaveById(leaveId: string): Promise<ILeave | null> {
     try {
       return await LeaveModel.findById(leaveId)
-        .populate('userId', 'name email employeeId joiningDate')
+        .populate('userId', 'name email employeeId joiningDate designation')
         .exec();
     } catch (error) {
       throw error;
@@ -31,7 +31,7 @@ export class LeaveRepository implements ILeaveRepository {
         leaveId,
         updateData,
         { new: true, runValidators: true }
-      ).populate('userId', 'name email employeeId joiningDate');
+      ).populate('userId', 'name email employeeId joiningDate designation');
     } catch (error) {
       throw error;
     }
@@ -58,6 +58,10 @@ export class LeaveRepository implements ILeaveRepository {
       if (filters.status) {
         query.status = filters.status;
       }
+
+      if (filters.leaveType) {
+        query.leaveType = filters.leaveType;
+      }
       
       if (filters.dateFrom || filters.dateTo) {
         query.leaveDate = {};
@@ -82,7 +86,7 @@ export class LeaveRepository implements ILeaveRepository {
       // Execute queries
       const [leaves, total] = await Promise.all([
         LeaveModel.find(query)
-          .populate('userId', 'name email employeeId joiningDate')
+          .populate('userId', 'name email employeeId joiningDate designation')
           .sort(sort)
           .skip(skip)
           .limit(limit)

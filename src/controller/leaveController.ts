@@ -1,5 +1,5 @@
 import { Request, Response } from 'express';
-import { ILeaveService } from '../service/leaveService';
+import { ILeaveService } from '../service/interface/ILeaveService';
 import { STATUS_CODE } from '../constance/statusCode';
 import { MESSAGE_CONST } from '../constant/MessageConst';
 import { CreateLeaveDto, UpdateLeaveStatusDto, LeaveQueryFilters } from '../types/leaveTypes';
@@ -18,7 +18,8 @@ export class LeaveController {
       const leaveData: CreateLeaveDto = {
         userId: req.body.userId,
         leaveDate: req.body.leaveDate,
-        reason: req.body.reason
+        reason: req.body.reason,
+        leaveType: req.body.leaveType,
       };
 
       // Extract uploaded files (if any)
@@ -400,6 +401,140 @@ export class LeaveController {
       });
     } catch (error) {
       console.error('Get monthly leave summary error:', error);
+      res.status(STATUS_CODE.INTERNAL_SERVER_ERROR).json({
+        success: false,
+        message: MESSAGE_CONST.INTERNAL_SERVER_ERROR
+      });
+    }
+  }
+
+  async getMonthlyLeaveConfig(req: Request, res: Response): Promise<void> {
+    try {
+      const yearParam = req.query.year as string | undefined;
+      const monthParam = req.query.month as string | undefined;
+
+      const year = yearParam ? parseInt(yearParam, 10) : new Date().getFullYear();
+      const month = monthParam ? parseInt(monthParam, 10) : new Date().getMonth() + 1;
+
+      if (isNaN(year) || year < 2000 || year > 2100) {
+        res.status(STATUS_CODE.BAD_REQUEST).json({
+          success: false,
+          message: 'Invalid year. Must be between 2000 and 2100'
+        });
+        return;
+      }
+
+      if (isNaN(month) || month < 1 || month > 12) {
+        res.status(STATUS_CODE.BAD_REQUEST).json({
+          success: false,
+          message: 'Invalid month. Must be between 1 and 12'
+        });
+        return;
+      }
+
+      const config = await this.__leaveService.getMonthlyLeaveConfig(year, month);
+
+      res.status(STATUS_CODE.OK).json({
+        success: true,
+        message: 'Monthly leave config retrieved successfully',
+        data: config,
+      });
+    } catch (error) {
+      console.error('Get monthly leave config error:', error);
+      res.status(STATUS_CODE.INTERNAL_SERVER_ERROR).json({
+        success: false,
+        message: MESSAGE_CONST.INTERNAL_SERVER_ERROR
+      });
+    }
+  }
+
+  async getAllStaffAttendance(req: Request, res: Response): Promise<void> {
+    try {
+      const { dateFrom, dateTo, staffId, today } = req.query;
+      
+      if (!dateFrom || !dateTo) {
+        res.status(STATUS_CODE.BAD_REQUEST).json({
+          success: false,
+          message: 'Both dateFrom and dateTo are required'
+        });
+        return;
+      }
+
+      // Validate dates
+      const fromDate = new Date(dateFrom as string);
+      const toDate = new Date(dateTo as string);
+      
+      if (isNaN(fromDate.getTime()) || isNaN(toDate.getTime())) {
+        res.status(STATUS_CODE.BAD_REQUEST).json({
+          success: false,
+          message: 'Invalid date format. Use YYYY-MM-DD format'
+        });
+        return;
+      }
+
+      if (fromDate > toDate) {
+        res.status(STATUS_CODE.BAD_REQUEST).json({
+          success: false,
+          message: 'dateFrom cannot be greater than dateTo'
+        });
+        return;
+      }
+
+      const result = await this.__leaveService.getAllStaffAttendance(
+        dateFrom as string,
+        dateTo as string,
+        staffId as string | undefined,
+        (typeof today === "string" && /^\d{4}-\d{2}-\d{2}$/.test(today)) ? today : undefined
+      );
+
+      res.status(STATUS_CODE.OK).json({
+        success: true,
+        message: 'All staff attendance retrieved successfully',
+        data: result
+      });
+    } catch (error) {
+      console.error('Get all staff attendance error:', error);
+      res.status(STATUS_CODE.INTERNAL_SERVER_ERROR).json({
+        success: false,
+        message: error instanceof Error ? error.message : MESSAGE_CONST.INTERNAL_SERVER_ERROR
+      });
+    }
+  }
+
+  async markStaffAbsent(req: Request, res: Response): Promise<void> {
+    try {
+      const adminId = (req as any).user?.id;
+      if (!adminId) {
+        res.status(STATUS_CODE.UNAUTHORIZED).json({ success: false, message: 'Admin not authenticated' });
+        return;
+      }
+      const { staffId, date, leaveType } = req.body;
+      if (!staffId || !date) {
+        res.status(STATUS_CODE.BAD_REQUEST).json({ success: false, message: 'staffId and date are required' });
+        return;
+      }
+      const result = await this.__leaveService.markStaffAbsent(staffId, date, adminId, leaveType);
+      res.status(result.success ? STATUS_CODE.OK : STATUS_CODE.BAD_REQUEST).json(result);
+    } catch (error) {
+      console.error('markStaffAbsent error:', error);
+      res.status(STATUS_CODE.INTERNAL_SERVER_ERROR).json({
+        success: false,
+        message: MESSAGE_CONST.INTERNAL_SERVER_ERROR
+      });
+    }
+  }
+
+  async removeStaffAbsent(req: Request, res: Response): Promise<void> {
+    try {
+      const { staffId, date } = req.body;
+      if (!staffId || !date) {
+        res.status(STATUS_CODE.BAD_REQUEST).json({ success: false, message: 'staffId and date are required' });
+        return;
+      }
+      const result = await this.__leaveService.removeStaffAbsent(staffId, date);
+      res.status(result.success ? STATUS_CODE.OK : STATUS_CODE.BAD_REQUEST).json(result);
+    } catch (error) {
+      console.error('removeStaffAbsent error:', error);
       res.status(STATUS_CODE.INTERNAL_SERVER_ERROR).json({
         success: false,
         message: MESSAGE_CONST.INTERNAL_SERVER_ERROR

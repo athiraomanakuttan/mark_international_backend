@@ -56,4 +56,12 @@ router.get('/leaves/summary/monthly',
   (req, res) => leaveController.getMonthlyLeaveSummary(req, res)
 );
 
+router.get('/leaves/config/monthly',
+  (req, res) => leaveController.getMonthlyLeaveConfig(req, res)
+);
+
+router.get('/leaves/staff-attendance', 
+  (req, res) => leaveController.getAllStaffAttendance(req, res)
+);
+
 export default router;

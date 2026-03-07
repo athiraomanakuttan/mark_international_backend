@@ -13,6 +13,13 @@ export enum LeaveStatus {
   REJECTED = 'rejected'
 }
 
+// Leave type enum (category for quotas and reporting)
+export enum LeaveType {
+  CASUAL = 'casual',
+  SICK = 'sick',
+  LOP = 'lop',
+}
+
 // Main leave interface
 export interface ILeave extends Document {
   userId: Types.ObjectId;
@@ -20,6 +27,8 @@ export interface ILeave extends Document {
   reason: string;
   documents?: ILeaveDocument[];
   status: LeaveStatus;
+  leaveType?: LeaveType;
+  adminComments?: string; // Optional reason when admin rejects
   createdAt: Date;
   updatedAt: Date;
 }
@@ -43,22 +52,12 @@ const leaveSchema = new Schema<ILeave>({
   userId: {
     type: Schema.Types.ObjectId,
     ref: 'User',
-    required: true,
-    index: true
+    required: true
   },
   leaveDate: {
     type: Date,
     required: true,
-    index: true,
-    validate: {
-      validator: function(value: Date) {
-        // Leave date should be today or in the future
-        const today = new Date();
-        today.setHours(0, 0, 0, 0);
-        return value >= today;
-      },
-      message: 'Leave date cannot be in the past'
-    }
+    // Past dates allowed for admin-marked absences; staff requests are validated in createLeave
   },
   reason: {
     type: String,
@@ -71,8 +70,17 @@ const leaveSchema = new Schema<ILeave>({
   status: {
     type: String,
     enum: Object.values(LeaveStatus),
-    default: LeaveStatus.PENDING,
-    index: true
+    default: LeaveStatus.PENDING
+  },
+  leaveType: {
+    type: String,
+    enum: Object.values(LeaveType),
+    default: LeaveType.LOP
+  },
+  adminComments: {
+    type: String,
+    required: false,
+    trim: true
   }
 }, {
   timestamps: true, // Automatically adds createdAt and updatedAt

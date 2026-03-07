@@ -11,6 +11,7 @@ export const mapUserToDto = (user: any): UserData => {
     isAdmin: user.role === 'admin',
     status: user.isActive || -1,
     createdAt: user.createdAt,
+    joiningDate: user.joiningDate,
     role: user.role,
     profilePic: typeof user.profilePic === 'string' ? user.profilePic : null,
     branchId: user.branchId,
