@@ -93,7 +93,6 @@ export class LeaveRepository implements ILeaveRepository {
           .exec(),
         LeaveModel.countDocuments(query)
       ]);
-      console.log("leaves",leaves)
 
       return { leaves, total };
     } catch (error) {
