@@ -41,10 +41,19 @@ export class EventRepository implements IEventRepository{
         }
     }
 
-    async getAllEvents(): Promise<IEventType[]> {
+    async getAllEvents(id?: string): Promise<IEventType[]> {
         try {
-            // Return all events sorted by start date (newest first)
-            return await EventModel.find().sort({ startDate: -1 }).exec();
+            const query: any = {};
+
+            if (id) {
+                query.staffIds = { $in: [id] };
+            }
+
+            // Return events sorted by start date (newest first)
+            return await EventModel.find(query)
+                .sort({ startDate: -1 })
+                .populate("staffIds", "name _id")
+                .exec();
         } catch (error) {
             throw new Error("Error fetching events");
         }

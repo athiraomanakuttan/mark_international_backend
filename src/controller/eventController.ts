@@ -94,7 +94,11 @@ startOfDay.setHours(0, 0, 0, 0);
     async getStudentByEventId(req:Request, res:Response):Promise<void>{
         try{
             const { eventId } = req.params;
-            const {staffId = undefined} = req.params;
+            const rawStaffId = req.query.staffId;
+            const staffId =
+                typeof rawStaffId === "string" && rawStaffId.trim() !== "" && rawStaffId !== "all"
+                    ? rawStaffId
+                    : undefined;
             const student = await this.__eventService.getStudentByEventId(eventId, staffId);
             if (student) {
                 res.status(STATUS_CODE.OK).json({status: true, data: student});
@@ -141,7 +145,9 @@ startOfDay.setHours(0, 0, 0, 0);
 
     async getAllEvents(req:CustomRequestType, res:Response):Promise<void>{
         try{
-            const events = await this.__eventService.getAllEvents();
+            const id = String(req.user?.id)
+            const role = String(req.user?.role)
+            const events = await this.__eventService.getAllEvents(role!=="admin"?id:undefined);
             res.status(STATUS_CODE.OK).json({status: true, data: events});
         }catch(err){
             res.status(STATUS_CODE.INTERNAL_SERVER_ERROR).json({status: false, message:MESSAGE_CONST.INTERNAL_SERVER_ERROR})

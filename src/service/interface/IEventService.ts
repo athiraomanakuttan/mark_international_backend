@@ -6,7 +6,7 @@ export interface IEventService {
     getEventById(id: string): Promise<IEventType | null>;
     updateEvent(id: string, event: Partial<IEventType>): Promise<IEventType | null>;
     deleteEvent(id: string): Promise<boolean>;
-    getAllEvents(): Promise<IEventType[]>;
+    getAllEvents(id?: string): Promise<IEventType[]>;
     getEventsByDate(date: Date,upcoming:boolean,id?:string): Promise<IEventType[]>;
     createStudent(studentData: StudentData): Promise<StudentData>;
     getRecentEvents(date: Date, upcoming: boolean, id?: string): Promise<IEventType[]>;

@@ -25,8 +25,8 @@ export class EventService implements IEventService {
         return this.__eventRepository.deleteEvent(id);
     }
 
-    async getAllEvents(): Promise<IEventType[]> {
-        return this.__eventRepository.getAllEvents();
+    async getAllEvents(id?: string): Promise<IEventType[]> {
+        return this.__eventRepository.getAllEvents(id);
     }
 
     async getEventsByDate(date: Date, upcoming: boolean = false,id?:string): Promise<IEventType[]> {
